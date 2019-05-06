@@ -1,0 +1,166 @@
+/* Last Modified:20180724 1700 */
+
+/* ARM & ATOM Git change log file name */
+def GIT_LOG_FNAME_ARM = "DailyBuild_ARM-ChangeLog-"
+def GIT_LOG_FNAME_ATOM = "DailyBuild_ATOM-ChangeLog-"
+
+/* Summary of CH7465CE Test Result */
+env.TR_EXECUTED = "NA"
+env.TR_PASS     = "NA"
+env.TR_FAIL     = "NA"
+env.TR_SKIP     = "NA"
+env.TR_PASSRATE = "NA"
+def TR_ROOT_DIR          	= "/home/cbn/FW_space"
+def TR_SUMMARY_FILE      	= "ch7465ce-result_summary.txt"
+def TR_REPORT_FILE       	= "ch7465ce-results.html"
+def TR_EMAIL_REPORT_FILE 	= "DailyTest_CH7465CE_2-Report-"
+def TR_EMAIL_CONSOLE_FILE 	= "DailyBuild_CH7465CE_2-Console-"
+def TR_EMAIL_TEXT_FILE		= "DailyBuild_CH7465CE_2-Text-"
+
+/* Summary of CH7469CE Test Result */
+env.TR_EXECUTED2 = "NA"
+env.TR_PASS2     = "NA"
+env.TR_FAIL2     = "NA"
+env.TR_BLOCKED2  = "NA"
+env.TR_PASSRATE2 = "NA"
+def TR_SUMMARY_FILE2      = "ch7469ce-result_summary.txt"
+def TR_REPORT_FILE2       = "ch7469ce-results.html"
+def TR_EMAIL_REPORT_FILE2 = "DailyBuild_CH7469CE-Report-"
+
+/* Jenkins Server- (DailyBuild_CH7465CE) */
+def JENKINS_LOGIN_USR 			= "cbn"
+def JENKINS_IP 					= "172.16.1.218"
+def JENKINS_PROJECT_HOME 		= "/home/cbn/jenkins_home/workspace/${JOB_NAME}"
+def JENKINS_PROJECT_JOB 		= "/home/cbn/jenkins_home/jobs/${JOB_NAME}"
+
+/* Boardfarm Server */
+def BOARDFARM_LOGIN_USR = "cbn"
+def BOARDFARM_IP = "172.16.1.218"
+def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
+def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
+
+/* Boardfarm Server2 */
+def BOARDFARM2_LOGIN_USR = "cbn"
+def BOARDFARM2_IP = "10.118.251.160"
+
+/* CH7465CE Profile */
+def ARM_PROFILE_NAME = "ch7465c_lgi"
+def ARM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}.log"
+def ATOM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}_atom.log"
+
+/* PA Firmware Image */
+def FI_PA_FILE = ""
+def FI_SH_PA_FILE = ""
+def FI_SH_PA_FILE_HEAD = "CH7465LG-NCIP-"
+def FI_SH_PA_FILE_MID  = ""
+def FI_SH_PA_FILE_TAIL = "-SH-PA"
+
+/* P7 Firmware Image */
+def FI_SH_NNEMN_P7_FILE = ""
+def FI_SH_NNEMN_P7_FILE_TAIL  = ".NNEMN.p7"
+def FI_SH_P7_FILE = ""
+def FI_SH_P7_FILE_REMOVE_STR = "-PA.NNEMN"
+
+/* Daily build */
+def MODEL = "CH7465CE"
+def DATE_STRING = ""
+def DAILY_BUILD_FOLDER = "dailybuild"
+
+/* E-mail*/
+def TEMP_RECIPIENT3= "sy_huang@compalbn.com, lynn_lin@compalbn.com, nero_chen@compalbn.com, cookie_tseng@compalbn.com, martin_wu@compalbn.com, luke_tseng@compalbn.com, vincent_huang@compalbn.com, amo_lin@compalbn.com , jessie_hsieh@compalbn.com, yiyu_hsieh@compalbn.com, ren_chen@compalbn.com, kity_lee@compalbn.com, cicdb-internal@libertyglobal.com, mamcclintock.consultant@libertyglobal.com, rjvisser@libertyglobal.com"
+def TEMP_RECIPIENT2= "cookie_tseng@compalbn.com"
+def TEMP_RECIPIENT4= "gerben_chen@compalbn.com, lynn_lin@compalbn.com"
+def TEMP_RECIPIENT1= "timer_ho@compalbn.com, asher_chen@compalbn.com, anderson_huang@compalbn.com, sy_huang@compalbn.com, jessie_hsieh@compalbn.com, amo_lin@compalbn.com, yiyu_hsieh@compalbn.com, gary_yang@compalbn.com, chris_fan@compalbn.com, weishun_wang@compalbn.com, kenny_chen@compalbn.com, nick_peng@compalbn.com, lawrence_kuo@compalbn.com, timer_ho@compalbn.com, vincent_huang@compalbn.com, kity_lee@compalbn.com, ed_hui@compalbn.com, lynn_lin@compalbn.com, cookie_tseng@compalbn.com, nero_chen@compalbn.com, andrew_hsiao@compalbn.com, gerben_chen@compalbn.com, ren_chen@compalbn.com, martin_wu@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+def TEMP_RECIPIENT= "asher_chen@compalbn.com, anderson_huang@compalbn.com, sy_huang@compalbn.com, jessie_hsieh@compalbn.com, amo_lin@compalbn.com, yiyu_hsieh@compalbn.com, gary_yang@compalbn.com, chris_fan@compalbn.com, weishun_wang@compalbn.com, kenny_chen@compalbn.com, nick_peng@compalbn.com, lawrence_kuo@compalbn.com, timer_ho@compalbn.com, vincent_huang@compalbn.com, ed_hui@compalbn.com, lynn_lin@compalbn.com, cookie_tseng@compalbn.com, nero_chen@compalbn.com, andrew_hsiao@compalbn.com, gerben_chen@compalbn.com, kity_lee@compalbn.com ,ren_chen@compalbn.com, carole_tsai@compalbn.com, steve_hsieh@compalbn.com, anna_lin@compalbn.com, demi_chang@compalbn.com, danny_lu@compalbn.com, zeke_chuang@compalbn.com, swoggle_fang@compalbn.com, phil_huang@compalbn.com, tommy_wen@compalbn.com, scott_lee@compalbn.com, yuhao_lee@compalbn.com, tino_huang@compalbn.com, olga_o@compalbn.com, martin_wu@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com, kity_lee@cbn.compalbn.com"
+def TEMP_RECIPIENT0= "gerben_chen@compalbn.com"
+/* Connect User*/
+def USER_FOLDER = "gerben_test"
+def USER_NAME= "cbnmat"
+def USER_PWD= "just4mat"
+def Log_parser= "Null"
+
+/* Control DUT */
+def DUT = "mv1-1-13"
+node("master"){
+    //Create directory for daily build
+    dir("${env.WORKSPACE}"){
+        DATE_STRING = sh(script:'printf "%s" "`date +%Y%m%d`"', returnStdout:true)
+        sh("mkdir -p ./${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}")
+		FI_SH_PA_FILE_MID = "6.15.28-${DATE_STRING}"
+		FI_SH_PA_FILE = "${FI_SH_PA_FILE_HEAD}${FI_SH_PA_FILE_MID}${FI_SH_PA_FILE_TAIL}" 
+    }   
+}
+node("gerben_test"){
+    //↓↓↓↓↓↓↓↓  Manual Mark Start  ↓↓↓↓↓↓↓↓
+    stage('remove old result'){
+        sh("rm -f /home/gerben_test/*.html")
+        sh("rm -f /home/gerben_test/total/*.html")
+    }
+    stage('Copy DailyTest Result'){
+        try{
+            sh("cp /home/cbn_daily/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/results_daily.html")
+            sh("cp /home/cbn_daily/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/total/results_daily.html")
+        }catch(err){}
+        try{
+            sh("cp /home/cbn_wifi/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/results_wifi.html")
+            sh("cp /home/cbn_wifi/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/total/results_wifi.html")
+        }catch(err){}
+        try{
+            sh("cp /home/cbn_isolate/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/results_isolate.html")
+            sh("cp /home/cbn_isolate/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/total/results_isolate.html")
+        }catch(err){}
+        //try{
+            //sh("cp /home/cbn_generic/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/results_generic.html")
+        //}catch(err){}
+        try{
+            sh("cp /home/cbn_voice/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/results_voice.html")
+            sh("cp /home/cbn_voice/cbn/boardfarm/results/results.html /home/${USER_FOLDER}/total/results_voice.html")
+        }catch(err){}
+    
+        sh("python /home/${USER_FOLDER}/allinone.py")
+        sh("python /home/${USER_FOLDER}/total/allinone.py")
+        
+        //Copy Test report to Jenkins Server
+    }
+    //↑↑↑↑↑↑↑↑ Manual Mark END ↑↑↑↑↑↑↑↑
+    stage('Integration To Html Result'){
+        
+        TR_EMAIL_REPORT_FILE="${TR_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+        sh("scp /home/${USER_FOLDER}/${TR_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_REPORT_FILE}")    
+        
+        //Generate test summary and results to /tftpboot
+        sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ch7465ce -p /home/${USER_FOLDER}/ch7465ce-results.html)")
+         //Set Test Summary 
+        
+        env.TR_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        try{
+            GIT_LOG_FNAME_ARM="${MODEL}-${GIT_LOG_FNAME_ARM}${DATE_STRING}.txt"
+            sh("cd ${TR_ROOT_DIR}; \
+		        scp ${GIT_LOG_FNAME_ARM} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${GIT_LOG_FNAME_ARM}")
+        }catch(err){}
+        try{
+            GIT_LOG_FNAME_ATOM="${MODEL}-${GIT_LOG_FNAME_ATOM}${DATE_STRING}.txt"
+            sh("cd ${TR_ROOT_DIR}; \
+		        scp ${GIT_LOG_FNAME_ATOM} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${GIT_LOG_FNAME_ATOM}")
+        }catch(err){}
+        currentBuild.result = "SUCCESS"
+    }
+}
+node("master"){
+    //send email
+    emailext attachmentsPattern: "**/${TR_EMAIL_REPORT_FILE},**/${GIT_LOG_FNAME_ARM},**/${GIT_LOG_FNAME_ATOM}",
+    body:'${JELLY_SCRIPT,template=\"templatereport_git2.jelly\"}',
+    recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+    replyTo: '$DEFAULT_REPLYTO',
+    subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - (${currentBuild.result}),${FI_SH_PA_FILE}",
+    to: "${TEMP_RECIPIENT}"
+    //to: '$DEFAULT_RECIPIENTS'
+    
+    
+    echo 'Completed daily build and daily testing'
+}
+

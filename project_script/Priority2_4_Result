@@ -1,0 +1,479 @@
+/* Last Modified:20190506 1700 */
+
+/* ARM & ATOM Git change log file name */
+def GIT_LOG_FNAME_ARM = "DailyBuild_ARM-ChangeLog-"
+def GIT_LOG_FNAME_ATOM = "DailyBuild_ATOM-ChangeLog-"
+
+/* Summary of CH7465CE Generic Test Result */
+def TR_ROOT_DIR          	= "/home/cbn/FW_space"
+def TR_GENERIC_SUMMARY_FILE      	= "ch7465ce_generic-result_summary.txt"
+def TR_GENERIC_REPORT_FILE       	= "ch7465ce_generic-results.html"
+def TR_GENERIC_EMAIL_REPORT_FILE 	= "CH7465CE_generic-Report-"
+env.TR_GENERIC_EXECUTED = "NA"
+env.TR_GENERIC_PASS     = "NA"
+env.TR_GENERIC_FAIL     = "NA"
+env.TR_GENERIC_SKIP     = "NA"
+env.TR_GENERIC_PASSRATE = "NA"
+
+/* Summary of CH7465CE ZIGGO Test Result */
+def TR_ZIGGO_SUMMARY_FILE      	= "ch7465ce_ziggo-result_summary.txt"
+def TR_ZIGGO_REPORT_FILE       	= "ch7465ce_ziggo-results.html"
+def TR_ZIGGO_EMAIL_REPORT_FILE 	= "CH7465CE_ziggo-Report-"
+env.TR_ZIGGO_EXECUTED = "NA"
+env.TR_ZIGGO_PASS     = "NA"
+env.TR_ZIGGO_FAIL     = "NA"
+env.TR_ZIGGO_SKIP     = "NA"
+env.TR_ZIGGO_PASSRATE = "NA"
+
+/* Summary of CH7465CE UPC Test Result */
+def TR_UPC_SUMMARY_FILE      	= "ch7465ce_upc-result_summary.txt"
+def TR_UPC_REPORT_FILE       	= "ch7465ce_upc-results.html"
+def TR_UPC_EMAIL_REPORT_FILE 	= "CH7465CE_upc-Report-"
+env.TR_UPC_EXECUTED = "NA"
+env.TR_UPC_PASS     = "NA"
+env.TR_UPC_FAIL     = "NA"
+env.TR_UPC_SKIP     = "NA"
+env.TR_UPC_PASSRATE = "NA"
+
+/* Summary of CH7465CE VM Test Result */
+def TR_VM_SUMMARY_FILE      	= "ch7465ce_vm-result_summary.txt"
+def TR_VM_REPORT_FILE       	= "ch7465ce_vm-results.html"
+def TR_VM_EMAIL_REPORT_FILE 	= "CH7465CE_vm-Report-"
+env.TR_VM_EXECUTED = "NA"
+env.TR_VM_PASS     = "NA"
+env.TR_VM_FAIL     = "NA"
+env.TR_VM_SKIP     = "NA"
+env.TR_VM_PASSRATE = "NA"
+
+/* Summary of CH7465CE IXIA Test Result */
+def TR_IXIA_SUMMARY_FILE      	= "ch7465ce_ixia-result_summary.txt"
+def TR_IXIA_REPORT_FILE       	= "ch7465ce_ixia-results.html"
+def TR_IXIA_EMAIL_REPORT_FILE 	= "CH7465CE_ixia-Report-"
+env.TR_IXIA_EXECUTED = "NA"
+env.TR_IXIA_PASS     = "NA"
+env.TR_IXIA_FAIL     = "NA"
+env.TR_IXIA_SKIP     = "NA"
+env.TR_IXIA_PASSRATE = "NA"
+
+/* Summary of CH7465CE CDROUTER Test Result */
+def TR_CDROUTER_SUMMARY_FILE      	= "ch7465ce_cdrouter-result_summary.txt"
+def TR_CDROUTER_REPORT_FILE       	= "ch7465ce_cdrouter-results.html"
+def TR_CDROUTER_EMAIL_REPORT_FILE 	= "CH7465CE_cdrouter-Report-"
+env.TR_CDROUTER_EXECUTED = "NA"
+env.TR_CDROUTER_PASS     = "NA"
+env.TR_CDROUTER_FAIL     = "NA"
+env.TR_CDROUTER_SKIP     = "NA"
+env.TR_CDROUTER_PASSRATE = "NA"
+
+/* Summary of CH7465CE TLN Test Result */
+def TR_TLN_SUMMARY_FILE      	= "ch7465ce_tln-result_summary.txt"
+def TR_TLN_REPORT_FILE       	= "ch7465ce_tln-results.html"
+def TR_TLN_EMAIL_REPORT_FILE 	= "CH7465CE_tln-Report-"
+env.TR_TLN_EXECUTED = "NA"
+env.TR_TLN_PASS     = "NA"
+env.TR_TLN_FAIL     = "NA"
+env.TR_TLN_SKIP     = "NA"
+env.TR_TLN_PASSRATE = "NA"
+
+/* Summary of CH7465CE 2CPE Test Result */
+def TR_CPE_SUMMARY_FILE      	= "ch7465ce_2cpe-result_summary.txt"
+def TR_CPE_REPORT_FILE       	= "ch7465ce_2cpe-results.html"
+def TR_CPE_EMAIL_REPORT_FILE 	= "CH7465CE_2cpe-Report-"
+env.TR_CPE_EXECUTED = "NA"
+env.TR_CPE_PASS     = "NA"
+env.TR_CPE_FAIL     = "NA"
+env.TR_CPE_SKIP     = "NA"
+env.TR_CPE_PASSRATE = "NA"
+
+/* Summary of CH7465CE Isolated Test Result */
+def TR_ISOLATED_SUMMARY_FILE      	= "ch7465ce_isolated-result_summary.txt"
+def TR_ISOLATED_REPORT_FILE       	= "ch7465ce_isolated-results.html"
+def TR_ISOLATED_EMAIL_REPORT_FILE 	= "CH7465CE_isolated-Report-"
+env.TR_ISOLATED_EXECUTED = "NA"
+env.TR_ISOLATED_PASS     = "NA"
+env.TR_ISOLATED_FAIL     = "NA"
+env.TR_ISOLATED_SKIP     = "NA"
+env.TR_ISOLATED_PASSRATE = "NA"
+/* Jenkins Server- (DailyBuild_CH7465CE) */
+def JENKINS_LOGIN_USR 			= "cbn"
+def JENKINS_IP 					= "172.16.1.218"
+def JENKINS_PROJECT_HOME 		= "/home/cbn/jenkins_home/workspace/${JOB_NAME}"
+def JENKINS_PROJECT_JOB 		= "/home/cbn/jenkins_home/jobs/${JOB_NAME}"
+
+/* Boardfarm Server */
+def BOARDFARM_LOGIN_USR = "cbn"
+def BOARDFARM_IP = "172.16.1.218"
+def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
+def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
+
+/* CH7465CE Profile */
+def ARM_PROFILE_NAME = "ch7465c_lgi"
+def ARM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}.log"
+def ATOM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}_atom.log"
+
+/* PA Firmware Image */
+def FI_PA_FILE = ""
+def FI_SH_PA_FILE = ""
+def FI_SH_PA_FILE_HEAD = "CH7465LG-NCIP-"
+def FI_SH_PA_FILE_MID  = ""
+def FI_SH_PA_FILE_TAIL = "-SH-PA"
+
+/* P7 Firmware Image */
+def FI_SH_NNEMN_P7_FILE = ""
+def FI_SH_NNEMN_P7_FILE_TAIL  = ".NNEMN.p7"
+def FI_SH_P7_FILE = ""
+def FI_SH_P7_FILE_REMOVE_STR = "-PA.NNEMN"
+
+/* Daily build */
+def MODEL = "CH7465CE"
+def DATE_STRING = ""
+def DAILY_BUILD_FOLDER = "dailybuild"
+
+/* E-mail*/
+def TEMP_RECIPIENT= "gerben_chen@compalbn.com, jessie_hsieh@compalbn.com, lynn_lin@compalbn.com"
+def TEMP_RECIPIENT1= "gerben_chen@compalbn.com, lynn_lin@compalbn.com"
+/* Connect User*/
+def USER_FOLDER = "result_integration"
+def USER_NAME= "cbnmat"
+def USER_PWD= "just4mat"
+def Log_parser= "Null"
+
+node("master"){
+    //Create directory for daily build
+    dir("${env.WORKSPACE}"){
+        DATE_STRING = sh(script:'printf "%s" "`date +%Y%m%d`"', returnStdout:true)
+        sh("mkdir -p ./${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}")
+		FI_SH_PA_FILE_MID = "6.15.28-${DATE_STRING}"
+		FI_SH_PA_FILE = "${FI_SH_PA_FILE_HEAD}${FI_SH_PA_FILE_MID}${FI_SH_PA_FILE_TAIL}" 
+    }   
+}
+node("result_integration"){
+    //↓↓↓↓↓↓↓↓  Manual Mark Start  ↓↓↓↓↓↓↓↓
+    stage('remove old result.html'){
+        try{
+            sh("rm *html")
+            echo "Clean Old HTML File Success"
+        }catch(err){
+            echo "Clean Old HTML File Fail"
+        }
+    }
+    stage('Integration Generic Result'){
+        try{
+            echo "=========================Integration Generic Result========================="
+            generic_file_name = "generic"
+            generic_output_name = "ch7465ce_generic-results.html"
+            generic_model_name = "ch7465ce_generic"
+            generic_path_name = "ch7465ce_generic-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${generic_file_name} -o ${generic_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration Generic Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration Generic Email Result========================="
+            //define generic
+            
+            TR_GENERIC_EMAIL_REPORT_FILE="${TR_GENERIC_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_GENERIC_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_GENERIC_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${generic_model_name} -p /home/${USER_FOLDER}/${generic_path_name})")
+            //Set Test Summary 
+        
+            env.TR_GENERIC_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_GENERIC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_GENERIC_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_GENERIC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_GENERIC_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_GENERIC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_GENERIC_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_GENERIC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_GENERIC_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_GENERIC_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration Generic Email Result : FAIL========================="
+        }
+    }
+    stage('Integration Ziggo Result'){
+        try{
+            echo "=========================Integration ZIGGO Result========================="
+            ziggo_file_name = "ziggo"
+            ziggo_output_name = "ch7465ce_ziggo-results.html"
+            ziggo_model_name = "ch7465ce_ziggo"
+            ziggo_path_name = "ch7465ce_ziggo-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${ziggo_file_name} -o ${ziggo_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration ZIGGO Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration ZIGGO Email Result========================="
+            //define ziggo
+            
+            TR_ZIGGO_EMAIL_REPORT_FILE="${TR_ZIGGO_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_ZIGGO_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_ZIGGO_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${ziggo_model_name} -p /home/${USER_FOLDER}/${ziggo_path_name})")
+            //Set Test Summary 
+        
+            env.TR_ZIGGO_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_ZIGGO_SUMMARY_FILE}", returnStdout:true)
+            env.TR_ZIGGO_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_ZIGGO_SUMMARY_FILE}", returnStdout:true)
+            env.TR_ZIGGO_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_ZIGGO_SUMMARY_FILE}", returnStdout:true)
+            env.TR_ZIGGO_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_ZIGGO_SUMMARY_FILE}", returnStdout:true)
+            env.TR_ZIGGO_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_ZIGGO_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration ZIGGO Email Result : FAIL========================="
+        }
+    }
+    stage('Integration UPC Result'){
+        try{
+            echo "=========================Integration UPC Result========================="
+            upc_file_name = "UPC"
+            upc_output_name = "ch7465ce_upc-results.html"
+            upc_model_name = "ch7465ce_upc"
+            upc_path_name = "ch7465ce_upc-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${upc_file_name} -o ${upc_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration UPC Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration UPC Email Result========================="
+            //define upc
+            
+            TR_UPC_EMAIL_REPORT_FILE="${TR_UPC_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_UPC_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_UPC_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${upc_model_name} -p /home/${USER_FOLDER}/${upc_path_name})")
+            //Set Test Summary 
+        
+            env.TR_UPC_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_UPC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_UPC_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_UPC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_UPC_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_UPC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_UPC_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_UPC_SUMMARY_FILE}", returnStdout:true)
+            env.TR_UPC_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_UPC_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration UPC Email Result : FAIL========================="
+        }
+    }
+    stage('Integration VM Result'){
+        try{
+            echo "=========================Integration VM Result========================="
+            vm_file_name = "vm"
+            vm_output_name = "ch7465ce_vm-results.html"
+            vm_model_name = "ch7465ce_vm"
+            vm_path_name = "ch7465ce_vm-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${vm_file_name} -o ${vm_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration VM Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration VM Email Result========================="
+            //define VM
+            
+            TR_VM_EMAIL_REPORT_FILE="${TR_VM_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_VM_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_VM_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${vm_model_name} -p /home/${USER_FOLDER}/${vm_path_name})")
+            //Set Test Summary 
+        
+            env.TR_VM_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_VM_SUMMARY_FILE}", returnStdout:true)
+            env.TR_VM_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_VM_SUMMARY_FILE}", returnStdout:true)
+            env.TR_VM_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_VM_SUMMARY_FILE}", returnStdout:true)
+            env.TR_VM_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_VM_SUMMARY_FILE}", returnStdout:true)
+            env.TR_VM_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_VM_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration VM Email Result : FAIL========================="
+        }
+    }
+    stage('Integration IXIA Result'){
+        try{
+            echo "=========================Integration IXIA Result========================="
+            ixia_file_name = "ixia"
+            ixia_output_name = "ch7465ce_ixia-results.html"
+            ixia_model_name = "ch7465ce_ixia"
+            ixia_path_name = "ch7465ce_ixia-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${ixia_file_name} -o ${ixia_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration IXIA Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration IXIA Email Result========================="
+            //define IXIA
+            
+            TR_IXIA_EMAIL_REPORT_FILE="${TR_IXIA_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_IXIA_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_IXIA_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${ixia_model_name} -p /home/${USER_FOLDER}/${ixia_path_name})")
+            //Set Test Summary 
+        
+            env.TR_IXIA_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_IXIA_SUMMARY_FILE}", returnStdout:true)
+            env.TR_IXIA_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_IXIA_SUMMARY_FILE}", returnStdout:true)
+            env.TR_IXIA_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_IXIA_SUMMARY_FILE}", returnStdout:true)
+            env.TR_IXIA_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_IXIA_SUMMARY_FILE}", returnStdout:true)
+            env.TR_IXIA_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_IXIA_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration IXIA Email Result : FAIL========================="
+        }
+    }
+    stage('Integration TLN Result'){
+        try{
+            echo "=========================Integration TLN Result========================="
+            tln_file_name = "tln"
+            tln_output_name = "ch7465ce_tln-results.html"
+            tln_model_name = "ch7465ce_tln"
+            tln_path_name = "ch7465ce_tln-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${tln_file_name} -o ${tln_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration TLN Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration TLN Email Result========================="
+            //define upc
+            
+            TR_TLN_EMAIL_REPORT_FILE="${TR_TLN_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_TLN_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_TLN_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${tln_model_name} -p /home/${USER_FOLDER}/${tln_path_name})")
+            //Set Test Summary 
+        
+            env.TR_TLN_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_TLN_SUMMARY_FILE}", returnStdout:true)
+            env.TR_TLN_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_TLN_SUMMARY_FILE}", returnStdout:true)
+            env.TR_TLN_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_TLN_SUMMARY_FILE}", returnStdout:true)
+            env.TR_TLN_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_TLN_SUMMARY_FILE}", returnStdout:true)
+            env.TR_TLN_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_TLN_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration TLN Email Result : FAIL========================="
+        }
+    }
+    stage('Integration CDROUTER Result'){
+        try{
+            echo "=========================Integration CDROUTER Result========================="
+            cdrouter_file_name = "cdrouter"
+            cdrouter_output_name = "ch7465ce_cdrouter-results.html"
+            cdrouter_model_name = "ch7465ce_cdrouter"
+            cdrouter_path_name = "ch7465ce_cdrouter-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${cdrouter_file_name} -o ${cdrouter_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration CDROUTER Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration CDROUTER Email Result========================="
+            //define cdrouter
+            
+            TR_CDROUTER_EMAIL_REPORT_FILE="${TR_CDROUTER_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_CDROUTER_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_CDROUTER_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${cdrouter_model_name} -p /home/${USER_FOLDER}/${cdrouter_path_name})")
+            //Set Test Summary 
+        
+            env.TR_CDROUTER_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_CDROUTER_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CDROUTER_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_CDROUTER_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CDROUTER_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_CDROUTER_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CDROUTER_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_CDROUTER_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CDROUTER_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_CDROUTER_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration CDROUTER Email Result : FAIL========================="
+        }
+    }
+    stage('Integration 2CPE Result'){
+        try{
+            echo "=========================Integration 2CPE Result========================="
+            cpe_file_name = "2CPE"
+            cpe_output_name = "ch7465ce_2cpe-results.html"
+            cpe_model_name = "ch7465ce_2cpe"
+            cpe_path_name = "ch7465ce_2cpe-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${cpe_file_name} -o ${cpe_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration 2CPE Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration 2CPE Email Result========================="
+            //define cdrouter
+            
+            TR_CPE_EMAIL_REPORT_FILE="${TR_CPE_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_CPE_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_CPE_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${cpe_model_name} -p /home/${USER_FOLDER}/${cpe_path_name})")
+            //Set Test Summary 
+        
+            env.TR_CPE_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration CPE Email Result : FAIL========================="
+        }
+    }
+    stage('Integration Isolated Result'){
+        try{
+            echo "=========================Integration Isolated Result========================="
+            isolated_file_name = "isolate"
+            isolated_output_name = "ch7465ce_isolated-results.html"
+            isolated_model_name = "ch7465ce_isolated"
+            isolated_path_name = "ch7465ce_isolated-results.html"
+            
+            sh("python /home/${USER_FOLDER}/allinone.py -n ${isolated_file_name} -o ${isolated_output_name}")
+            
+            //Copy Test report to Jenkins Server
+        }catch(err){
+            echo "=========================Integration Isolated Result : FAIL========================="
+        }
+        try{
+            echo "=========================Integration Isolated Email Result========================="
+            //define cdrouter
+            
+            TR_ISOLATED_EMAIL_REPORT_FILE="${TR_ISOLATED_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+            sh("scp /home/${USER_FOLDER}/${TR_ISOLATED_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_ISOLATED_EMAIL_REPORT_FILE}")    
+        
+            //Generate test summary and results to /tftpboot
+            sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ${isolated_model_name} -p /home/${USER_FOLDER}/${isolated_path_name})")
+            //Set Test Summary 
+        
+            env.TR_CPE_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+            env.TR_CPE_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_CPE_SUMMARY_FILE}", returnStdout:true)
+        }catch(err){
+            echo "=========================Integration CPE Email Result : FAIL========================="
+        }
+    }
+    //↑↑↑↑↑↑↑↑ Manual Mark END ↑↑↑↑↑↑↑↑
+}
+node("master"){
+    //send email
+    emailext attachmentsPattern: "**/${TR_GENERIC_EMAIL_REPORT_FILE},**/${TR_IXIA_EMAIL_REPORT_FILE},**/${TR_VM_EMAIL_REPORT_FILE},**/${TR_CDROUTER_EMAIL_REPORT_FILE},**/${TR_ZIGGO_EMAIL_REPORT_FILE},**/${TR_UPC_EMAIL_REPORT_FILE},**/${TR_TLN_EMAIL_REPORT_FILE},**/${TR_CPE_EMAIL_REPORT_FILE},**/${TR_ISOLATED_EMAIL_REPORT_FILE}",
+    body:'${JELLY_SCRIPT,template=\"templatereport_p2_4.jelly\"}',
+    recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+    replyTo: '$DEFAULT_REPLYTO',
+    subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - (${currentBuild.result}),${FI_SH_PA_FILE}",
+    to: "${TEMP_RECIPIENT}"
+    //to: '$DEFAULT_RECIPIENTS'
+    echo 'Completed daily build and daily testing'
+}
+

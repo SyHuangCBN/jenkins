@@ -1,0 +1,178 @@
+/* Last Modified:20181121 1730 */
+/* ARM & ATOM Git change log file name */
+def GIT_LOG_FNAME_ARM = "DailyBuild_ARM-ChangeLog-"
+def GIT_LOG_FNAME_ATOM = "DailyBuild_ATOM-ChangeLog-"
+/* Summary of CH7465CE Test Result */
+env.TR_EXECUTED = "NA"
+env.TR_PASS     = "NA"
+env.TR_FAIL     = "NA"
+env.TR_BLOCKED  = "NA"
+env.TR_PASSRATE = "NA"
+def TR_ROOT_DIR          	= "/home/cbn/FW_space"
+def TR_SUMMARY_FILE      	= "ch7465ce-result_summary.txt"
+def TR_REPORT_FILE       	= "ch7465ce-results.html"
+def TR_EMAIL_REPORT_FILE 	= "DailyBuild_CH7465CE_2-Report-"
+def TR_EMAIL_CONSOLE_FILE 	= "DailyBuild_CH7465CE_2-Console-"
+def TR_EMAIL_TEXT_FILE		= "DailyBuild_CH7465CE_2-Text-"
+
+/* Summary of CH7469CE Test Result */
+env.TR_EXECUTED2 = "NA"
+env.TR_PASS2     = "NA"
+env.TR_FAIL2     = "NA"
+env.TR_BLOCKED2  = "NA"
+env.TR_PASSRATE2 = "NA"
+def TR_SUMMARY_FILE2      = "ch7469ce-result_summary.txt"
+def TR_REPORT_FILE2       = "ch7469ce-results.html"
+def TR_EMAIL_REPORT_FILE2 = "DailyBuild_CH7469CE-Report-"
+def BOARDFARM_CBN_RD = "/home/cbn/CBN_RD"
+/* Jenkins Server- (DailyBuild_CH7465CE) */
+def JENKINS_LOGIN_USR 			= "cbn"
+def JENKINS_IP 					= "172.16.1.218"
+def JENKINS_PROJECT_HOME 		= "/home/cbn/jenkins_home/workspace/${JOB_NAME}"
+def JENKINS_PROJECT_JOB 		= "/home/cbn/jenkins_home/jobs/${JOB_NAME}"
+
+/* Boardfarm Server */
+def BOARDFARM_LOGIN_USR = "cbn"
+def BOARDFARM_IP = "172.16.1.218"
+def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
+def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
+
+/* Boardfarm Server2 */
+def BOARDFARM2_LOGIN_USR = "cbn"
+def BOARDFARM2_IP = "10.118.251.160"
+
+/* CH7465CE Profile */
+def ARM_PROFILE_NAME = "ch7465c_lgi"
+def ARM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}.log"
+def ATOM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}_atom.log"
+
+/* PA Firmware Image */
+def FI_PA_FILE = ""
+def FI_SH_PA_FILE = ""
+def FI_SH_PA_FILE_HEAD = "CH7465LG-NCIP-"
+def FI_SH_PA_FILE_MID  = ""
+def FI_SH_PA_FILE_TAIL = "-SH-PA"
+def FI_SH_PA_FILE_TAIL2 = "-SH"
+/* P7 Firmware Image */
+def FI_SH_NNEMN_P7_FILE = ""
+def FI_SH_NNEMN_P7_FILE_TAIL  = ".NNEMN.p7"
+def FI_SH_NNEMN_P7_FILE_TAIL2  = ".p7"
+def FI_SH_P7_FILE = ""
+def FI_SH_P7_FILE2 = ""
+def FI_SH_P7_FILE_REMOVE_STR = "-PA.NNEMN"
+
+/* Daily build */
+def MODEL = "CH7465CE"
+def DATE_STRING = ""
+def DAILY_BUILD_FOLDER = "dailybuild"
+
+/* E-mail*/
+def TEMP_RECIPIENT3= "sy_huang@compalbn.com, lynn_lin@compalbn.com, nero_chen@compalbn.com, cookie_tseng@compalbn.com, martin_wu@compalbn.com, luke_tseng@compalbn.com, vincent_huang@compalbn.com, amo_lin@compalbn.com , jessie_hsieh@compalbn.com, yiyu_hsieh@compalbn.com, ren_chen@compalbn.com, kity_lee@compalbn.com, cicdb-internal@libertyglobal.com, mamcclintock.consultant@libertyglobal.com, rjvisser@libertyglobal.com"
+def TEMP_RECIPIENT2= "cookie_tseng@compalbn.com"
+def TEMP_RECIPIENT= "gerben_chen@compalbn.com"
+def TEMP_RECIPIENT1= "sy_huang@compalbn.com, lynn_lin@compalbn.com, nero_chen@compalbn.com, cookie_tseng@compalbn.com, martin_wu@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com, gerben_chen@compalbn.com"
+def TEMP_RECIPIENT0= "nero_chen@compalbn.com"
+
+/* Connect User*/
+def USER_FOLDER = "cbn_ixia"
+def USER_NAME   = "cbnmat"
+def USER_PWD    = "just4mat"
+def Log_parser  = "Null"
+def PA_FW_NAME = ""
+def P7_FW_NAME = ""
+node("master"){
+    //Create directory for daily build
+    dir("${env.WORKSPACE}"){
+        DATE_STRING = sh(script:'printf "%s" "`date +%Y%m%d`"', returnStdout:true)
+        sh("mkdir -p ./${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}")
+		//FI_SH_PA_FILE_MID = "6.15.18.26-${DATE_STRING}"
+		//FI_SH_PA_FILE = "${FI_SH_PA_FILE_HEAD}${FI_SH_PA_FILE_MID}${FI_SH_PA_FILE_TAIL}"
+		//FI_SH_PA_FILE2 = "${FI_SH_PA_FILE_HEAD}${FI_SH_PA_FILE_MID}${FI_SH_PA_FILE_TAIL2}"
+		
+    }
+}
+
+node("cbn_ixia"){
+    try{
+        sh(script:"re=`python /home/${USER_FOLDER}/cbn/sign_recheck.py -n ch7465ce -p PA` ; printf \$re ", returnStdout:true) 
+    }catch(err){
+        Sign_P7_Image_Status = "Build PA Image Fail"
+        currentBuild.result = 'FAILURE'
+
+		//send email
+		emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+		recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+		replyTo: '$DEFAULT_REPLYTO',
+		subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${currentBuild.result} (${Sign_P7_Image_Status})",
+		//to: '$DEFAULT_RECIPIENTS'
+		to: "${TEMP_RECIPIENT}"
+		//to: "${TEMP_RECIPIENT1}"
+		
+		error 'Post-Build Image actions:Build PA Image Fail'   
+        
+    }
+    
+    PA_FW_NAME = sh(script:"re=`python /home/${USER_FOLDER}/cbn/sign_7465_fwname.py -n ch7465ce -f PA` ; printf \$re ", returnStdout:true)
+    echo "${PA_FW_NAME}"
+    
+	/* Sign P7 Image Status */
+	def Sign_P7_Image_Success 	= "Sign P7 Image Success"
+	def Sign_P7_Image_Fail		= "Sign P7 Image Fail"
+	def Sign_P7_Image_Status 	= ""
+
+    /* Upgrade Firmware Status */
+    def Upgrade_FW_Success = "Upgrade Firmware Success"
+    def Upgrade_FW_Fail    = "Upgrade Firmware Failure"
+    def Upgrade_FW_Status  = ""
+
+    /* Run Test Status */
+    def Run_Test_Success = "Run Test Success"
+    def Run_Test_Fail    = "Run Test Failure"
+    def Run_Test_Status  = ""
+
+	stage('Sign P7 Image'){
+        echo 'Starting Sign P7 Image...'
+        try {
+            //sh("(cd ~/cbn/sign_image/; python FW_sign_and_upgrade -s ${FI_SH_PA_FILE})")
+            sh("(cd ~/cbn/sign_image/; python FW_daily_sign -s ${PA_FW_NAME} -b ${MODEL})")
+
+            echo 'Sign P7 Image Success'
+            Sign_P7_Image_Status = "${Sign_P7_Image_Success}"
+        } catch (err) {
+            echo 'Sign P7 Image Fail'
+            Sign_P7_Image_Status = "${Sign_P7_Image_Fail}"
+        }
+		try {
+			//Copy P7 file to Windows(//cbn-bak/cbr_rd/..../Dailybuild)
+            FI_SH_NNEMN_P7_FILE = sh(script:"re=`python /home/${USER_FOLDER}/cbn/sign_7465_fwname.py -n ch7465ce -f P7` ; printf \$re ", returnStdout:true)
+            //FI_SH_NNEMN_P7_FILE2 = "${FI_SH_PA_FILE2}${FI_SH_NNEMN_P7_FILE_TAIL2}"
+            FI_SH_NNEMN_P7_FILE2 = sh(script:"re=`python /home/${USER_FOLDER}/cbn/sign_7465_fwname.py -p 7465p7` ; printf \$re ", returnStdout:true)
+            sh("cp ${BOARDFARM_TFTP_ROOT}/${FI_SH_NNEMN_P7_FILE} ${BOARDFARM_CBN_RD}/${MODEL}/Daily/${DATE_STRING}/${FI_SH_NNEMN_P7_FILE2}")
+            //sh("cp ${BOARDFARM_TFTP_ROOT}/${FI_SH_NNEMN_P7_FILE} ${BOARDFARM_CBN_RD}/${MODEL}/Daily/${DATE_STRING}/${FI_SH_NNEMN_P7_FILE2}")
+			echo 'Copy P7 file to Windows Success'
+		} catch (err) {
+		    Sign_P7_Image_Status = "${Sign_P7_Image_Fail}"
+			echo 'Copy P7 file to Windows Fail'
+		}
+
+
+		echo "Starting Sign P7 Image actions..."
+		echo "Sign_P7_Image_Status = ${Sign_P7_Image_Status}"
+
+		if(Sign_P7_Image_Status == "${Sign_P7_Image_Fail}") {
+			currentBuild.result = 'FAILURE'
+
+			//send email
+			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+			replyTo: '$DEFAULT_REPLYTO',
+			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${currentBuild.result} (${Sign_P7_Image_Status})",
+			//to: '$DEFAULT_RECIPIENTS'
+			to: "${TEMP_RECIPIENT}"
+			//to: "${TEMP_RECIPIENT1}"
+
+			error 'Post-Sign P7 Image actions:Sign P7 Image Fail'
+		}
+
+    } //stage('Sign P7 Image')
+}

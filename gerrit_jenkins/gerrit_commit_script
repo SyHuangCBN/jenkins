@@ -1,0 +1,129 @@
+#!/bin/bash
+if [ "$GERRIT_PROJECT" == "boardfarm-cbn" -o "$GERRIT_PROJECT" == "boardfarm-lgi" ]; then
+        cd /home/gerrit/cbn/boardfarm
+        git fetch origin master
+        git reset --hard FETCH_HEAD    
+        rm /home/gerrit/cbn/boardfarm/results/test_results.json
+        cd /home/gerrit/cbn/$GERRIT_PROJECT
+        sha=$(git rev-parse HEAD)
+        # TODO: don't hard code username
+        git fetch http://jenkins:cbncbn@$GERRIT_HOST:8080/$GERRIT_PROJECT.git $GERRIT_REFSPEC
+        #git checkout FETCH_HEAD
+        #git rebase $sha
+        git reset --hard FETCH_HEAD        
+        gerrit_host=$GERRIT_HOST
+        gerrit_port=$GERRIT_PORT
+        gerrit_patchset_rev=$GERRIT_PATCHSET_REVISION
+        gerrit_user="jenkins_cbn@"
+        export change_list="$GERRIT_CHANGE_NUMBER,$GERRIT_PATCHSET_NUMBER"
+        always_send_email=1
+
+        #git show FETCH_HEAD
+        echo "[cbn_robustness]" > pick_tmp.txt
+		echo "RootFSBootTest" >> pick_tmp.txt		
+        new_tests=$(for t in `git show FETCH_HEAD  | sed -n 's/+class\s*\(.*\)(.*/\1/p' | tr '\n' ' '`; do echo "$t" >> pick_tmp.txt ;done)
+        second_test=$(for t in `git show FETCH_HEAD  | sed -n 's/.*\sclass\s*\(.*\)(.*/\1/p' | tr '\n' ' '`; do echo "$t" >> pick_tmp.txt ;done)        
+        sort pick_tmp.txt | uniq > tmp.txt
+        filename='tmp.txt'
+		exec < $filename
+		> choose_list.txt
+		while read line
+		do
+    		if [[ $line =~ NTL7465LG\_\_.*\_\_[0-9]{1,} ]];
+    		then
+        		echo $line >> choose_list.txt  
+    		fi  
+		done
+		
+		count=$(grep -c "" choose_list.txt)
+        if [ "$count" -eq 0 ];
+		then
+        		ssh $gerrit_user$gerrit_host -p $gerrit_port gerrit review $gerrit_patchset_rev -m \'Boardfarm tests passed This Ticket Is Function or Test Case Naming Rule is Wrong\'
+        		exit 0
+		else
+		        echo "Starting Commit Test......"
+		fi
+
+		#if [ "$count" -ge 5 ];
+		#then
+    		:
+		#elif [ "$count" == "4" ];
+		#then    
+    	#	sort --random-sort generic_data_base.txt | head -n 1 | tee -a choose_list.txt
+		#elif [ "$count" == "3" ];
+		#then
+    	#	sort --random-sort generic_data_base.txt | head -n 2 | tee -a choose_list.txt
+		#elif [ "$count" == "2" ]
+		#then
+    	#	sort --random-sort generic_data_base.txt | head -n 3 | tee -a choose_list.txt
+		#elif [ "$count" == "1" ]
+		#then
+    	#	sort --random-sort generic_data_base.txt | head -n 4 | tee -a choose_list.txt
+		#fi    
+
+		#shuf choose_list.txt -o choose_random_list.txt
+
+		#testsuite='choose_random_list.txt'
+        testsuite='choose_list.txt'
+		exec < $testsuite
+		echo "[cbn_robustness]" > testsuites_staging.cfg
+		echo "RootFSBootTest" >> testsuites_staging.cfg
+		echo "NTL7465LG__P1__85" >> testsuites_staging.cfg
+		while read line
+		do
+    		if [[ $line =~ NTL7465LG\_\_.*\_\_[0-9]{1,} ]];
+    		then
+            	echo "$line"
+        		echo $line >> testsuites_staging.cfg  
+    		fi  
+		done
+        #features () {
+        feature=$(git show | sed -n 's/\s*Features:\s*\(.*\)$/\1/p' | awk '{print "-f "$0}' | tr '\n' ' ')
+        if [ -z "$feature" ]; then
+        	echo "feature is empty"
+            feature="-f generic"
+        fi      
+        echo "./bft -b mv1 -x cbn_robustness $feature | ~/scripts/hpaste | tee results.txt"
+        #extra_args="$extra_args $(new_tests) $(features)"        
+        
+        export BFT_CONFIG=/home/gerrit/cbn/boardfarm-cbn/cbn.json
+        export BFT_OVERLAY=/home/gerrit/cbn/boardfarm-cbn
+        cd /home/gerrit/cbn/boardfarm;    
+		./bft -b mv1 -x cbn_robustness $feature -m http://172.16.1.2/CH7465LG-NCIP-6.15.27-ENG4-SH.p7 -s CH7465LG-NCIP-6.15.27-ENG4-SH.p7 | ~/scripts/hpaste | tee results.txt
+        result_addr=$(cat results.txt)
+        cd -
+fi
+> /home/gerrit/cbn/commit_test_result.txt
+if [ -n "$gerrit_host" ]; then
+        # if this was trigger by gerrit and not a job we care
+        # more about that change than the image / upstream job used
+        trigger_job_name=$GERRIT_CHANGE_URL
+        any_pass=$(cat /home/gerrit/cbn/boardfarm/results/test_results.json | jq ' .tests_pass')
+        any_failures=$(cat /home/gerrit/cbn/boardfarm/results/test_results.json | jq ' .tests_fail')
+        any_skip=$(cat /home/gerrit/cbn/boardfarm/results/test_results.json | jq ' .tests_skip')
+		if [ "$any_failures" -eq 0 ] && [ "$any_skip" -eq 0 ]; then
+        		cat /home/gerrit/cbn/boardfarm/results/test_results.json | jq '.test_results[] | [ .grade, .name, .message, .elapsed_time ] | @tsv' | \
+                        sed -e 's/"//g' -e 's/\\t/    /g' | \
+                        while read -r line; do
+                        		echo "$line" >> /home/gerrit/cbn/commit_test_result.txt        
+                        done
+                result_for_human=$(cat /home/gerrit/cbn/commit_test_result.txt)
+                echo "$result_for_human"
+                #ssh $gerrit_user$gerrit_host -p $gerrit_port gerrit review $gerrit_patchset_rev -m "'" "CBN--$result_for_human""'"
+                ssh $gerrit_user$gerrit_host -p $gerrit_port gerrit review $gerrit_patchset_rev -m \'Boardfarm tests passed $result_addr\'
+        else 
+                cat /home/gerrit/cbn/boardfarm/results/test_results.json | jq '.test_results[] | [ .grade, .name, .message, .elapsed_time ] | @tsv' | \
+                        sed -e 's/"//g' -e 's/\\t/    /g' | \
+                        while read -r line; do
+                        		echo "$line" >> /home/gerrit/cbn/commit_test_result.txt        
+                        done
+                result_for_human=$(cat /home/gerrit/cbn/commit_test_result.txt)
+                echo "$result_for_human"
+                #ssh $gerrit_user$gerrit_host -p $gerrit_port gerrit review $gerrit_patchset_rev -m "'" "CBN--$result_for_human""'"
+                ssh $gerrit_user$gerrit_host -p $gerrit_port gerrit review $gerrit_patchset_rev -m \'Boardfarm tests failed $result_addr\'
+				exit 1
+        fi
+else
+        echo "Not running on gerrit server"
+fi
+

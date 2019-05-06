@@ -1,0 +1,81 @@
+cd ~/cbn/boardfarm/
+git fetch
+git reset --hard FETCH_HEAD
+
+cd ~/cbn/boardfarm/
+cp -f /home/cbn_generic/bft ./
+
+cd ~/cbn/boardfarm/zephyr/
+cp -f /home/cbn_generic/zephyr_reporter.py ./
+
+cd ~/cbn/boardfarm/devices/
+cp -f /home/cbn_generic/casa_cmts.py ./
+
+cd ~/cbn/boardfarm-cbn/
+git config --global user.email "gerben_chen@compalbn.com"
+git config --global user.name "gerben_chen"
+git fetch
+git reset --hard FETCH_HEAD
+cp -f /home/cbn_generic/testsuites_staging.cfg ./
+#git fetch origin refs/changes/99/2599/13 && git cherry-pick FETCH_HEAD
+#git reset --hard FETCH_HEAD
+
+cd ~/cbn/boardfarm/devices/
+cp -f /home/cbn_generic/debian.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_wifi.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_plume.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_management_3044_3045_3048.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_management.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_management_1981.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_management_3014_3052_3054.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_management_3018_3024_3028_3029_3061.py ./
+
+cd ~/cbn/boardfarm-cbn/zephyr/
+cp -f /home/cbn_generic/boardfarm_tc_meta_file.csv ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_TR069_3919_3921_3923_3925.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_docsis.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_management_3019_3020_3023_3027_3030.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_TR069_3919_3921_3923_3925.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbn_management_4105.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/class_helpers.py ./
+
+cd ~/cbn/boardfarm-cbn/tests/
+cp -f /home/cbn_generic/cbnlib.py ./
+
+cd ~/cbn/boardfarm-cbn/devices/mv1/cm-cfg/
+cp -f /home/cbn_generic/9_EU_CBN_DSLite_LG_Upgrade.txt ./
+
+cd ~/cbn/boardfarm-cbn/devices/mv1/cm-cfg/
+cp -f /home/cbn_generic/9_EU_CBN_DualStack_LG_Upgrade.txt ./
+
+cd ~/cbn/boardfarm-cbn/devices/mv1/cm-cfg/
+cp -f /home/cbn_generic/9_EU_CBN_IPv4RG_LG_Downgrade.txt ./
+
+cd ~/cbn/boardfarm-cbn/devices/mv1/cm-cfg/
+cp -f /home/cbn_generic/9_EU_CBN_IPv4RG_LG_Upgrade.txt ./

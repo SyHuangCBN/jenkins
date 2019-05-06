@@ -1,0 +1,152 @@
+#!/usr/bin/env python
+
+from selenium import webdriver
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import os, time, re, tftpy, subprocess
+import requests
+import shutil
+import argument
+import argparse
+
+user_name = "wilson"
+user_pw = "kaiouki1"
+sleep_timing = 15
+save_FW_path = "/home/cbn/FW_space"
+result = 1
+
+
+def now_short():
+    """
+    Name:now_short
+    Purpose: Get current date and time string
+    Input:None
+    Output:String in "YYYYMMDD-hhmmss" format
+    """
+
+    timeString = time.strftime("%Y%m%d-%H%M%S", time.localtime())+"\t"
+    return timeString
+
+if __name__ == '__main__':
+
+    HELP_EPILOG = '''
+    Example use:
+
+    FW_sign_and_upgrade -s <FW_name>
+
+    '''
+    '''
+    Read command-line arguments, return a simple configuration for running tests.
+    '''
+    parser = argparse.ArgumentParser(description='Cntrol to sign daily FW and update FW',
+								 usage='FW_sign_and_upgrade [option]',
+								 formatter_class=argparse.RawDescriptionHelpFormatter,
+								 epilog=HELP_EPILOG)
+    parser.add_argument('-s', '--FW_name', metavar='', type=str, default=None, help='FW_name')
+    parser.add_argument('-b', '--Model_name', metavar='', type=str, default=None, help='Model_name')
+    args = parser.parse_args()
+    daily_fw_name = args.FW_name
+    daily_model_name = args.Model_name
+    model_dict = {"CH7465CE":"CH7465C_IPFREE",
+                "CH8568QE":"CH8568QE"}
+    print(now_short()+"FW build start %s" %daily_fw_name)
+    localtime = time.localtime(time.time())
+    date_time = (time.strftime("%Y %m %d", localtime))
+    build_time = (time.strftime("%H %M %S", localtime))
+    join_date = ''.join(date_time.split())
+    join_build = ''.join(build_time.split())
+    Daily_build_FW_Path = save_FW_path+ "/" + join_date + "/" + join_build
+    need_sigened_image_path = str
+    print("\n"+now_short()+"Daily_build_FW_Path = %s" % Daily_build_FW_Path)
+    if not os.path.exists(Daily_build_FW_Path):
+        sample_tree=os.walk(save_FW_path)
+        sample_tree=os.listdir(save_FW_path)
+
+        for i in sample_tree:
+            check_fw_name = i.find(daily_fw_name)
+            if check_fw_name != -1:
+                daily_fw_name = i
+        print("\n"+now_short()+"Find a new fw -> %s" %daily_fw_name)
+        need_sigened_image_path = os.path.join(Daily_build_FW_Path + "/" + daily_fw_name)
+
+        complete_FW_path = os.path.join(save_FW_path + "/" + daily_fw_name)
+        os.makedirs(Daily_build_FW_Path)
+        shutil.move(complete_FW_path, need_sigened_image_path)
+    else:
+        sample_tree=os.walk(Daily_build_FW_Path)
+        sample_tree=os.listdir(Daily_build_FW_Path)
+
+    	for i in sample_tree:
+            check_fw_name = i.find(daily_fw_name)
+            if check_fw_name != -1:
+                daily_fw_name = i
+        print("\n"+now_short()+"Find a new fw -> %s" %daily_fw_name)
+        need_sigened_image_path = os.path.join(Daily_build_FW_Path + "/" + daily_fw_name)
+        print("\n"+now_short()+"need_sigened_image_path -> %s" % need_sigened_image_path)
+
+    upgrade_fw_name = daily_fw_name
+    download_image = upgrade_fw_name + '.NNEMN.p7'
+
+    complete_p7_fw_path = os.path.join(save_FW_path + "/" + download_image)
+    print("\n"+now_short()+"%s\n" %complete_p7_fw_path)
+    if os.path.exists(need_sigened_image_path):
+        if not os.path.exists(complete_p7_fw_path):
+	    #url = "http://rd2fs.compalbn.com/Default.asp"
+            url = "http://10.118.251.230/Default.asp"
+            subprocess.call("geckodriver --version", shell=True)
+            profile = webdriver.FirefoxProfile()
+            profile.set_preference('browser.download.dir', save_FW_path)
+            profile.set_preference('browser.download.folderList', 2)
+            profile.set_preference('browser.download.manager.showWhenStarting', False)
+            profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/octet-stream')
+            options = webdriver.FirefoxOptions()
+            options.set_headless()
+            options.add_argument('--disable-gpu')
+            driver = webdriver.Firefox(firefox_options=options, firefox_profile=profile)
+            driver.implicitly_wait(15)
+            driver.get(url)
+        	#key ID and password
+            print('Key Username and Password')
+            driver.find_element_by_name("USERNAME").clear()
+            driver.find_element_by_name("USERNAME").send_keys(user_name)
+            time.sleep(sleep_timing)
+            driver.find_element_by_name("USERPASSWORD").clear()
+            driver.find_element_by_name("USERPASSWORD").send_keys(user_pw)
+            time.sleep(sleep_timing)
+            driver.find_element_by_css_selector("input.submit").click()
+            time.sleep(sleep_timing)
+        	#try:
+            print ('Choose Texas Instruments')
+            driver.find_element_by_link_text("Texas Instruments").click()
+            driver.implicitly_wait(300)
+            time.sleep(sleep_timing)
+            print ('Choose File 1')
+            driver.find_element_by_name("File1").clear()
+            print(now_short()+"send_keys(%s)" % need_sigened_image_path)
+            driver.find_element_by_name("File1").send_keys(need_sigened_image_path)
+            driver.implicitly_wait(300)
+            time.sleep(sleep_timing)
+            print(now_short()+"click submit")
+            driver.find_element_by_css_selector("input.submit").click()
+            driver.implicitly_wait(300)
+            time.sleep(sleep_timing)
+            print ("Check %s" % daily_model_name)
+            Select(driver.find_element_by_name("model")).select_by_visible_text("%s" % model_dict[daily_model_name])
+            driver.implicitly_wait(300)
+            time.sleep(sleep_timing)
+            print (now_short()+"click signBtn")
+            driver.find_element_by_id("signBtn").click()
+            driver.implicitly_wait(300)
+            time.sleep(sleep_timing)
+            try:
+                print(now_short()+"click download_image")
+                driver.find_element_by_link_text(download_image).click()
+                driver.implicitly_wait(300)
+                time.sleep(90)
+                print('Sign P7 Complete')
+            except Exception as err:
+                print (err)
+                driver.quit()
+            driver.quit()
+

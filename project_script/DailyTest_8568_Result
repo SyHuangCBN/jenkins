@@ -1,0 +1,124 @@
+/* Last Modified: 20180914 */
+
+/* UEFI Binary Image */
+def UEFI_IMAGE = "CGM2_IFWI_IA32_R_BDREV20_BSTEP_573854_Update_with_Params.bin"
+
+/* ARM & ATOM Git change log file name */
+def GIT_LOG_FNAME_ARM = "DailyBuild_ARM-ChangeLog-"
+def GIT_LOG_FNAME_ATOM = "DailyBuild_ATOM-ChangeLog-"
+
+/* Summary of CH8568QE Test Result */
+env.TR_EXECUTED = "NA"
+env.TR_PASS     = "NA"
+env.TR_FAIL     = "NA"
+env.TR_SKIP     = "NA"
+env.TR_PASSRATE = "NA"
+def TR_ROOT_DIR          = "/home/cbn/FW_space"
+def TR_SUMMARY_FILE      = "ch8568qe-result_summary.txt"
+def TR_REPORT_FILE       = "ch8568qe-results.html"
+def TR_EMAIL_REPORT_FILE = "DailyTest_CH8568QE-Report-"
+def TR_EMAIL_CONSOLE_FILE 	= "DailyTest_CH8568QE-Console-"
+def TR_EMAIL_TEXT_FILE		= "DailyTest_CH8568QE-Text-"
+def BOARDFARM_CBN_RD = "/home/cbn/CBN_RD"
+
+/* Jenkins Server- (DailyBuild_CH8568QE) */
+def JENKINS_LOGIN_USR = "cbn"
+def JENKINS_IP = "172.16.1.218"
+def JENKINS_PROJECT_HOME =  "/home/cbn/jenkins_home/workspace/${JOB_NAME}"
+
+/* Boardfarm Server */
+def BOARDFARM_LOGIN_USR = "cbn"
+def BOARDFARM_IP = "10.118.251.119"
+def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
+
+/* CH8568QE Profile */
+def ARM_BUILD_CODE_LOG = "ch8568qe_arm.log"
+def ATOM_BUILD_CODE_LOG = "ch8568qe_atom.log"
+
+/* PA Firmware Image */
+def FI_PA_FILE = ""
+def FI_SH_PA_FILE = ""
+def FI_SH_PA_FILE_HEAD = "CH8568QE-LGI-NOPP-PC15-"
+def FI_SH_PA_FILE_MID  = ""
+def FI_SH_PA_FILE_TAIL = "-SH-PA"
+
+/* P7 Firmware Image */
+def FI_SH_NNEMN_P7_FILE = ""
+def FI_SH_NNEMN_P7_FILE_EXT  = ".NNEMN.p7"
+def FI_SH_NNEMN_P7_FILE_TAIL  = ".NNEMN.p7"
+def FI_SH_P7_FILE = ""
+def FI_SH_P7_FILE_REMOVE_STR = "-PA.NNEMN"
+
+/* Daily build */
+def MODEL = "CH8568QE"
+def DATE_STRING = ""
+def DAILY_BUILD_FOLDER = "dailybuild"
+def TEMP_RECIPIENT1= "weed_chien@compalbn.com,rock_chen@compalbn.com, ken_chen@compalbn.com, benny_kuo@compalbn.com, asher_chen@compalbn.com, anderson_huang@compalbn.com, sy_huang@compalbn.com, jessie_hsieh@compalbn.com, amo_lin@compalbn.com, yiyu_hsieh@compalbn.com, gary_yang@compalbn.com, chris_fan@compalbn.com, weishun_wang@compalbn.com, kenny_chen@compalbn.com, nick_peng@compalbn.com, lawrence_kuo@compalbn.com, timer_ho@compalbn.com, vincent_huang@compalbn.com, ed_hui@compalbn.com, lynn_lin@compalbn.com, cookie_tseng@compalbn.com, nero_chen@compalbn.com, andrew_hsiao@compalbn.com, gerben_chen@compalbn.com, ren_chen@compalbn.com, kity_lee@cbn.compalbn.com, ren_chen@compalbn.com, carole_tsai@compalbn.com, steve_hsieh@compalbn.com, anna_lin@compalbn.com, danny_lu@compalbn.com, zeke_chuang@compalbn.com, swoggle_fang@compalbn.com, tommy_wen@compalbn.com, scott_lee@compalbn.com, yuhao_lee@compalbn.com, tino_huang@compalbn.com, olga_o@compalbn.com, martin_wu@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com, kity_lee@compalbn.com"
+def TEMP_RECIPIENT2= "timer_ho@compalbn.com, sy_huang@compalbn.com, jessie_hsieh@compalbn.com, amo_lin@compalbn.com, yiyu_hsieh@compalbn.com, lynn_lin@compalbn.com, cookie_tseng@compalbn.com, nero_chen@compalbn.com, gerben_chen@compalbn.com, ren_chen@compalbn.com, martin_wu@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+def TEMP_RECIPIENT= "gerben_chen@compalbn.com"
+/* Connect User*/
+
+def USER_FOLDER = "gerben_test"
+def USER_NAME= "cbnmat"
+def USER_PWD= "just4mat"
+def Log_parser= "Null"
+
+node("master"){
+    //Create directory for daily build
+    dir("${env.WORKSPACE}"){
+        DATE_STRING = sh(script:'printf "%s" "`date +%Y%m%d`"', returnStdout:true)
+        sh("mkdir -p ./${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}")
+		FI_SH_PA_FILE_MID = "7.11.46.27-${DATE_STRING}"
+		FI_SH_PA_FILE = "${FI_SH_PA_FILE_HEAD}${FI_SH_PA_FILE_MID}${FI_SH_PA_FILE_TAIL}" 
+    }   
+}
+node("gerben_test"){
+    stage('remove old result'){
+        sh("rm -f /home/gerben_test/8568_result/ch8568qe-results.html")
+    }
+    stage('Copy DailyTest Result'){
+    
+        sh("python /home/${USER_FOLDER}/8568_result/allinone.py")
+        //Copy Test report to Jenkins Server
+    }
+    //↑↑↑↑↑↑↑↑ Manual Mark END ↑↑↑↑↑↑↑↑
+    stage('Integration To Html Result'){
+        
+        TR_EMAIL_REPORT_FILE="${TR_EMAIL_REPORT_FILE}${DATE_STRING}.html"
+        sh("scp /home/${USER_FOLDER}/8568_result/${TR_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_REPORT_FILE}")    
+        
+        //Generate test summary and results to /tftpboot
+        
+        sh("(export PATH=/home/${USER_FOLDER}/cbn/sign_image:${PATH}; Get_Result_Summary -m ch8568qe -p /home/${USER_FOLDER}/8568_result/ch8568qe-results.html)")
+         //Set Test Summary 
+        
+        env.TR_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        env.TR_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+        try{
+            GIT_LOG_FNAME_ARM="${MODEL}-${GIT_LOG_FNAME_ARM}${DATE_STRING}.txt"
+            sh("cd ${TR_ROOT_DIR}; \
+		        scp ${GIT_LOG_FNAME_ARM} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${GIT_LOG_FNAME_ARM}")
+        }catch(err){}
+        try{
+            GIT_LOG_FNAME_ATOM="${MODEL}-${GIT_LOG_FNAME_ATOM}${DATE_STRING}.txt"
+            sh("cd ${TR_ROOT_DIR}; \
+		        scp ${GIT_LOG_FNAME_ATOM} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${GIT_LOG_FNAME_ATOM}")
+        }catch(err){}
+        currentBuild.result = "SUCCESS"
+    }
+}
+node("master"){
+    //send email
+    emailext attachmentsPattern: "**/${TR_EMAIL_REPORT_FILE},**/${GIT_LOG_FNAME_ARM},**/${GIT_LOG_FNAME_ATOM}",
+    body:'${JELLY_SCRIPT,template=\"dailybuild_ch8568qe_report2.jelly\"}',
+    recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+    replyTo: '$DEFAULT_REPLYTO',
+    subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - (${currentBuild.result}),${FI_SH_PA_FILE}",
+    to: "${TEMP_RECIPIENT1}"
+    
+    echo 'Completed daily build and daily testing'
+}
+
