@@ -1,0 +1,316 @@
+/* Version 1.0 20190801 1800 */
+
+/* ARM & ATOM Git change log file name */
+def GIT_LOG_FNAME_ARM = "DailyBuild_ARM-ChangeLog-"
+def GIT_LOG_FNAME_ATOM = "DailyBuild_ATOM-ChangeLog-"
+/* Summary of CH7465CE Test Result */
+env.TR_EXECUTED = "NA"
+env.TR_PASS     = "NA"
+env.TR_FAIL     = "NA"
+env.TR_SKIP     = "NA"
+env.TR_PASSRATE = "NA"
+def TR_ROOT_DIR          	= "/home/cbn/FW_space"
+def TR_SUMMARY_FILE      	= "ch7465ce-result_summary.txt"
+def TR_REPORT_FILE       	= "ch7465ce-results.html"
+def TR_EMAIL_REPORT_FILE_Default 	= "DailyBuild_CH7465CE_2-Report-"
+def TR_EMAIL_CONSOLE_FILE_Default 	= "DailyBuild_CH7465CE_2-Console-"
+def TR_EMAIL_TEXT_FILE_daily		= "DailyBuild_CH7465CE_2-Text-"
+def TR_EMAIL_TEXT_FILE_wifi		= "DailyBuild_CH7465CE_2-Text-"
+def TR_EMAIL_TEXT_FILE_voice	= "DailyBuild_CH7465CE_2-Text-"
+def TR_EMAIL_TEXT_FILE_isolate		= "DailyBuild_CH7465CE_2-Text-"
+def TR_EMAIL_REPORT_FILE_result 	= "DailyTest_CH7465CE_2-Report-"
+def TR_EMAIL_CONSOLE_FILE_result 	= "DailyBuild_CH7465CE_2-Console-"
+def TR_EMAIL_TEXT_FILE_result		= "DailyBuild_CH7465CE_2-Text-"
+/* Jenkins Server- (DailyBuild_CH7465CE) */
+def JENKINS_LOGIN_USR 			= "cbn"
+def JENKINS_IP 					= "172.16.1.218"
+def JENKINS_PROJECT_HOME 		= "/home/cbn/jenkins_home/workspace/${JOB_NAME}"
+def JENKINS_PROJECT_JOB 		= "/home/cbn/jenkins_home/jobs/${JOB_NAME}"
+
+/* Boardfarm Server */
+def BOARDFARM_LOGIN_USR = "cbn"
+def BOARDFARM_IP = "172.16.1.218"
+def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
+def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
+
+
+/* CH7465CE Profile */
+def ARM_PROFILE_NAME = "ch7465c_lgi"
+def ARM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}.log"
+def ATOM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}_atom.log"
+
+/* PA Firmware Image */
+def FI_PA_FILE = ""
+def FI_SH_PA_FILE = ""
+def FI_SH_PA_FILE_HEAD = "CH7465LG-NCIP-"
+def FI_SH_PA_FILE_MID  = ""
+def FI_SH_PA_FILE_TAIL = "-SH-PA"
+
+/* P7 Firmware Image */
+def FI_SH_NNEMN_P7_FILE = ""
+def FI_SH_NNEMN_P7_FILE_TAIL  = ".NNEMN.p7"
+def FI_SH_P7_FILE = ""
+def FI_SH_P7_FILE_REMOVE_STR = "-PA.NNEMN"
+def FI_SH_NNEMN_P7_FILE_HTTP = ""
+/* Daily build */
+def MODEL = "CH7465CE"
+def DATE_STRING = ""
+def DAILY_BUILD_FOLDER = "dailybuild"
+
+/* E-mail*/
+def TEMP_RECIPIENT= "gerben_chen@compalbn.com, lynn_lin@compalbn.com, martin_wu@compalbn.com, nero_chen@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+/* Connect Daily User*/
+def USER_FOLDER_daily = "cbn_daily"
+def Jenkins_node_daily = "cbn_daily"
+def result_name_daily = "results_daily.html"
+def Run_Test_Status_daily = ""
+/* Connect Isolate User*/
+def USER_FOLDER_isolate = "cbn_isolate"
+def Jenkins_node_isolate = "cbn_isolate"
+def result_name_isolate = "results_isolate.html"
+def feature_isolate = "-n mv1-2-3"
+def DUT_isolate = "mv1-2-3"
+def Run_Test_Status_isolate = ""
+/* Connect Voice User*/
+def USER_FOLDER_voice = "cbn_voice"
+def Jenkins_node_voice = "cbn_voice"
+def result_name_voice = "results_voice.html"
+def feature_voice = "-n mv1-1-8"
+def DUT_voice = "mv1-1-8"
+def Run_Test_Status_voice = ""
+/* Connect Wifi User*/
+def Jenkins_node_wifi = "cbn_wifi"
+def USER_FOLDER_wifi = "cbn_wifi"
+def result_name_wifi = "results_wifi.html"
+def feature_wifi = "-q wifi"
+def Run_Test_Status_wifi = ""
+/*Connect Global User*/
+def USER_NAME= "cbnmat"
+def USER_PWD= "just4mat"
+def Log_parser= "Null"
+
+/*Connect Result User*/
+def USER_FOLDER_result = "result_integration"
+def result_folder = "CH7465CE_Daily"
+/* Testsuite */
+def testsuite_choose_daily = ""
+def testsuite_choose_wifi = ""
+def testsuite_choose_isolate = ""
+def testsuite_choose_voice = ""
+
+/* Sign P7 Image Status */
+def Sign_P7_Image_Success 	= "Sign P7 Image Success"
+def Sign_P7_Image_Fail		= "Sign P7 Image Fail"
+def Sign_P7_Image_Status 	= ""
+
+/* Upgrade Firmware Status */
+def Upgrade_FW_Success = "Upgrade Firmware Success"
+def Upgrade_FW_Fail    = "Upgrade Firmware Failure"
+def Upgrade_FW_Status  = ""
+
+/* Git Clone Status */
+def Git_Clone_Success = "Git Clone Success"
+def Git_Clone_Fail = "Git Clone Falure"
+def Git_Clone_Status = ""
+
+/* Git Cm Cfg */
+def Copy_Cm_Cfg_Success = "Copy Cm Cfg Success"
+def Copy_Cm_Cfg_Fail = "Copy Cm Cfg Falure"
+def Copy_Cm_Cfg_Status = ""
+
+/* Run Test Status */
+def Run_Test_Success = "Run Test Success"
+def Run_Test_Fail    = "Run Test Failure"
+def DUT_status = ""
+
+node("master"){
+    //Create directory for daily build
+    dir("${env.WORKSPACE}"){
+        DATE_STRING = sh(script:'printf "%s" "`date +%Y%m%d`"', returnStdout:true)
+        sh("mkdir -p ./${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}")
+		FI_SH_PA_FILE_MID = "6.15.27-${DATE_STRING}"
+		FI_SH_PA_FILE = "${FI_SH_PA_FILE_HEAD}${FI_SH_PA_FILE_MID}${FI_SH_PA_FILE_TAIL}"
+    }
+}
+node("cbn_ixia"){
+    stage('Check FW NAME -s'){
+		echo "===================Check FW NAME -s START==================="
+        try{
+            FI_SH_NNEMN_P7_FILE = sh(script:"re=`python /home/cbn_ixia/cbn/sign_7465_fwname.py -n ch7465ce -f P7` ; printf \$re ", returnStdout:true)
+            echo "${FI_SH_NNEMN_P7_FILE}"
+        }catch(err){
+			echo "Check FW NAME -s FAIL"
+		}
+		echo "===================Check FW NAME -s FINISH==================="
+    }
+	stage('Check E-mail Title'){
+		echo "===================Check E-mail Title START==================="
+        try{
+            FI_SH_PA_FILE = sh(script:"re=`python /home/cbn_ixia/cbn/sign_7465_fwname.py -n ch7465ce -f PA_TITLE` ; printf \$re ", returnStdout:true)
+        }catch(err){
+			echo "Check E-mail Title FAIL"
+		}
+		echo "===================Check E-mail Title FINISH==================="
+    }
+	stage('Check HTTP FW NAME -m'){
+		echo "===================Check HTTP FW NAME -m START==================="
+		try{
+			FI_SH_NNEMN_P7_FILE_HTTP = "http://172.16.1.2/${FI_SH_NNEMN_P7_FILE}"
+			echo "FI_SH_NNEMN_P7_FILE_HTTP: ${FI_SH_NNEMN_P7_FILE_HTTP}"
+		}catch(err){
+			echo "Check HTTP FW NAME -m FAIL"
+		}
+		echo "===================Check HTTP FW NAME -m FINISH==================="
+	}
+}
+stage('Daily Test - Generic') {
+    parallel (
+        "Build Daily Isolate Task" :{
+            while( true ) {
+                list = ["cbn_isolated_daily"]
+                list_count = list.size()
+                for (int i = 0; i < list_count; i++) {
+                    testsuite_choose_isolate = list[i]
+                    timestamps {
+                        node("${Jenkins_node_isolate}"){
+                            stage('Remove Old Result'){
+                                echo "===================Remove Old Result START==================="
+                                try{
+                                    sh("cd /home/${USER_FOLDER_isolate}/cbn/boardfarm/results/ && rm *.txt")
+                                }catch(err){
+                                    echo "Txt File Is Empty"
+                                }
+                                echo "===================Remove Old Result FINISH==================="
+                            }
+                        	/*stage('Git Clone'){
+                				echo "===================Git Clone START==================="
+                        		try {
+                        			sh("(/home/${USER_FOLDER_isolate}/cbn/git_clone_cmd)")
+                        			echo 'Git Clone Success'
+                                    Git_Clone_Status = "${Git_Clone_Success}"
+                        		} catch (err){
+                        		    echo "${err}"
+                        			echo 'Git Clone Falure'
+                        			Git_Clone_Status = "${Git_Clone_Fail}"
+                        		}
+                        		echo "Starting Git Clone actions..."
+                        		echo "Git_Clone_Status = ${Git_Clone_Status}"
+                        		if(Git_Clone_Status == "${Git_Clone_Fail}") {
+                        			Isolate_result = 'FAILURE'
+
+                        			//send email
+                        			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+                        			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                        			replyTo: '$DEFAULT_REPLYTO',
+                        			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Isolate_result} (${Git_Clone_Status})",
+                        			//to: '$DEFAULT_RECIPIENTS'
+                        			to: "${TEMP_RECIPIENT}"
+                        			error 'Post-Git Clone actions:Git Clone Fail'
+                        		}
+                				echo "===================Git Clone FINISH==================="
+                        	}*/
+                            stage('Run CH7465CE Test'){
+                                echo "===================Run CH7465CE Test START==================="
+                                try {
+                                    sh("(export BFT_CONFIG=/home/${USER_FOLDER_isolate}/cbn/boardfarm-cbn/cbn.json; \
+                                    export BFT_OVERLAY=/home/${USER_FOLDER_isolate}/cbn/boardfarm-cbn; \
+                                    cd /home/${USER_FOLDER_isolate}/cbn/boardfarm; \
+                                    /home/${USER_FOLDER_isolate}/cbn/boardfarm/bft -b mv1 -x ${testsuite_choose_isolate} -m ${FI_SH_NNEMN_P7_FILE_HTTP} -s ${FI_SH_NNEMN_P7_FILE} ${feature_isolate})")
+                                    Run_Test_Status_isolate = "${Run_Test_Success}"
+                                }catch (err){
+                                    echo "Boardfarm Error"
+                                    Run_Test_Status_isolate = "${Run_Test_Fail}"
+                                }
+                                echo "===================Run CH7465CE Test FINISH==================="
+                            }
+                            stage('CH7465CE SUMMARY AND RESULT'){
+                                echo "===================CH7465CE SUMMARY AND RESULT START==================="
+                                try{
+                					//Generate test summary and results to /tftpboot
+                                    sh("(export PATH=/home/${USER_FOLDER_isolate}/cbn/sign_image:${PATH}; Get_Result_Summary -m ch7465ce -p /home/${USER_FOLDER_isolate}/cbn/boardfarm/results/results.html)")
+                                    //Set Test Summary
+                                    env.TR_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+                                    env.TR_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+                                    env.TR_FAIL     = sh(script:"cut -d: -f3 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+                                    env.TR_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+                                    env.TR_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
+                                    //Copy Test report to Jenkins Server
+                                    TR_EMAIL_REPORT_FILE_isolate="${TR_EMAIL_REPORT_FILE_Default}${testsuite_choose_isolate}-${DATE_STRING}.html"
+                                    sh("scp ${TR_ROOT_DIR}/${TR_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_REPORT_FILE_isolate}")
+                                    echo 'Summary Result Success'
+                                } catch (err){
+                                    echo 'Summary Result Fail'
+                                }
+                				echo "===================CH7465CE SUMMARY AND RESULT FINISH==================="
+                            }
+
+                			stage('Starting Post-Run test actions'){
+                				echo "Run_Test_Status_isolate = ${Run_Test_Status_isolate}"
+                				stage('Parser test results for RootFSBootTest'){
+                					echo "===================Parser test results for RootFSBootTest START==================="
+                					dir("/home/${USER_FOLDER_isolate}/cbn/boardfarm/results"){
+                					//Get test result of RootFSBootTest from test_results.json
+                						Test_Result_Grade_isolate = sh(script:"re=`cat test_results.json | jq '.test_results[0].grade' | sed 's/\"//g'`; printf \$re", returnStdout:true)
+                						Test_Result_Name_isolate = sh(script:"re=`cat test_results.json | jq '.test_results[0].name' | sed 's/\"//g'`; printf \$re", returnStdout:true)
+                					}
+                					echo "===================Parser test results for RootFSBootTest FINISH==================="
+                				}
+                			}
+                			stage('Copy Console Log'){
+                				echo "===================Copy Console Log START==================="
+                				Wed_Path_Url_isolate 			= "http://${JENKINS_IP}:8080/job/${JOB_NAME}/lastBuild/consoleText"
+                				TR_EMAIL_CONSOLE_FILE_isolate	= "${TR_EMAIL_CONSOLE_FILE_Default}${testsuite_choose_isolate}-${DATE_STRING}.log"
+                				withCredentials([usernamePassword(credentialsId: '59dbf979-31c9-4fbc-8870-7cc7e91fd58e', usernameVariable: 'JENKINSUSER', passwordVariable: 'JENKINSPWD')]) {
+                					sh("cd ~/cbn/sign_image; \
+                        			curl -u ${JENKINSUSER}:${JENKINSPWD} ${Wed_Path_Url_isolate} > console_output; \
+                        			scp ./console_output ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_CONSOLE_FILE_isolate}")
+                				}
+                				echo "===================Copy Console Log FINISH==================="
+                			}
+                			stage('Compression File'){
+                				echo "===================Compression File START==================="
+                				TR_EMAIL_TEXT_FILE_isolate="${TR_EMAIL_TEXT_FILE_isolate}${DATE_STRING}.zip"
+                				sh("cd /home/${USER_FOLDER_isolate}/cbn/boardfarm/results; \
+                        		zip results.zip *.txt *.log; \
+                        		scp ./results.zip ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_TEXT_FILE_isolate}")
+                				echo "===================Compression File FINISH==================="
+                			}
+                			stage('Port Disconnect'){
+				                echo '===================Port Disconnect Start==================='
+				                try {
+                                    sh(script:"re=`python /home/${USER_FOLDER_isolate}/cbn/port_disconnect.py -n ${DUT_isolate}` ;", returnStdout:true)
+                                    echo '===================Port Disconnect Pass==================='
+                                } catch(err){
+                                    echo '===================Port Disconnect Fail==================='
+            	                }
+            	                echo '===================Port Disconnect FINISH==================='
+				            }
+                        }
+                        node("result_integration"){
+                            try{
+                				sh("cp /home/${USER_FOLDER_isolate}/cbn/boardfarm/results/results.html /home/${USER_FOLDER_result}/${result_folder}/${result_name_isolate}")
+                				echo 'Copy 7465 daily test result pass'
+                			}catch(err){
+                				echo 'Copy ${result_name_isolate} to ${result_folder} fail'
+                			}
+                        }
+                    }
+                }
+                if( "${Run_Test_Status_isolate}" == "Run Test Success" &&  "${Test_Result_Grade_isolate}" != "FAIL") break
+                    echo "RUN Daily Test Not Success, Restart!!"
+            }//END While
+            Isolate_result = "SUCCESS"
+            node("master"){
+                //send email
+                emailext attachmentsPattern: "**/${TR_EMAIL_REPORT_FILE_isolate}",
+                body:'${JELLY_SCRIPT,template=\"templatereport_git2.jelly\"}',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                replyTo: '$DEFAULT_REPLYTO',
+                subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_isolate} - (${Isolate_result}), ${FI_SH_PA_FILE}",
+                //to: '$DEFAULT_RECIPIENTS'
+                to: "${TEMP_RECIPIENT}"
+                echo 'Completed daily build and daily testing'
+            }
+        },//END Isolate Task
+    )//end parallel
+}//end stage
