@@ -32,7 +32,8 @@ def BOARDFARM_LOGIN_USR = "cbn"
 def BOARDFARM_IP = "172.16.1.218"
 def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
 def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
-
+def bft_config = "http://172.16.1.237/boardfarm/api/bf_config"
+def bft_overlay = '"../boardfarm-cbn ../boardfarm-docsis"'
 
 /* CH7465CE Profile */
 def ARM_PROFILE_NAME = "ch7465c_lgi"
@@ -182,7 +183,7 @@ stage('Daily Test - Generic') {
                                 }
                                 echo "===================Remove Old Result FINISH==================="
                             }
-                        	/*stage('Git Clone'){
+                            stage('Git Clone'){
                 				echo "===================Git Clone START==================="
                         		try {
                         			sh("(/home/${USER_FOLDER_isolate}/cbn/git_clone_cmd)")
@@ -208,12 +209,12 @@ stage('Daily Test - Generic') {
                         			error 'Post-Git Clone actions:Git Clone Fail'
                         		}
                 				echo "===================Git Clone FINISH==================="
-                        	}*/
+                            }
                             stage('Run CH7465CE Test'){
                                 echo "===================Run CH7465CE Test START==================="
                                 try {
-                                    sh("(export BFT_CONFIG=/home/${USER_FOLDER_isolate}/cbn/boardfarm-cbn/cbn.json; \
-                                    export BFT_OVERLAY=/home/${USER_FOLDER_isolate}/cbn/boardfarm-cbn; \
+                                    sh("(export BFT_CONFIG=${bft_config}; \
+                                    export BFT_OVERLAY=${bft_overlay}; \
                                     cd /home/${USER_FOLDER_isolate}/cbn/boardfarm; \
                                     /home/${USER_FOLDER_isolate}/cbn/boardfarm/bft -b mv1 -x ${testsuite_choose_isolate} -m ${FI_SH_NNEMN_P7_FILE_HTTP} -s ${FI_SH_NNEMN_P7_FILE} ${feature_isolate})")
                                     Run_Test_Status_isolate = "${Run_Test_Success}"
