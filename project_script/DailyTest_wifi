@@ -32,9 +32,9 @@ def BOARDFARM_LOGIN_USR = "cbn"
 def BOARDFARM_IP = "172.16.1.218"
 def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
 def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
-def bft_config = "http://172.16.1.237/boardfarm/api/bf_config"
+//def bft_config = "http://172.16.1.237/boardfarm/api/bf_config"
 def bft_overlay = '"../boardfarm-cbn ../boardfarm-docsis"'
-
+def bft_config = "../boardfarm-cbn/cbn.json"
 /* CH7465CE Profile */
 def ARM_PROFILE_NAME = "ch7465c_lgi"
 def ARM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}.log"
