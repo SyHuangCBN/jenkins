@@ -83,7 +83,7 @@ def Run_Test_Status_voice = ""
 def Jenkins_node_wifi = "cbn_wifi"
 def USER_FOLDER_wifi = "cbn_wifi"
 def result_name_wifi = "results_wifi.html"
-def feature_wifi = "-q wifi"
+def feature_wifi = "-n mv1-2-5"
 def Run_Test_Status_wifi = ""
 /*Connect Global User*/
 def USER_NAME= "cbnmat"
