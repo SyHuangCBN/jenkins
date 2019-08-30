@@ -84,6 +84,7 @@ def Jenkins_node_wifi = "cbn_wifi"
 def USER_FOLDER_wifi = "cbn_wifi"
 def result_name_wifi = "results_wifi.html"
 def feature_wifi = "-n mv1-2-5"
+def DUT_wifi = "mv1-2-5"
 def Run_Test_Status_wifi = ""
 /*Connect Global User*/
 def USER_NAME= "cbnmat"
@@ -413,6 +414,16 @@ stage('Daily Test - Generic') {
                         		scp ./results.zip ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_TEXT_FILE_wifi}")
                 				echo "===================Compression File FINISH==================="
                 			}
+                            stage('Port Disconnect'){
+                                echo '===================Port Disconnect Start==================='
+                                try {
+                                    sh(script:"re=`python /home/${USER_FOLDER_wifi}/cbn/port_disconnect.py -n ${DUT_wifi}` ;", returnStdout:true)
+                                    echo '===================Port Disconnect Pass==================='
+                                } catch(err){
+                                    echo '===================Port Disconnect Fail==================='
+                                }
+            	                echo '===================Port Disconnect FINISH==================='
+				            }
                         }
                         node("gerben_test"){
                             try{
@@ -551,14 +562,14 @@ stage('Daily Test - Generic') {
                 				echo "===================Compression File FINISH==================="
                 			}
                 			stage('Port Disconnect'){
-				                echo '===================Port Disconnect Start==================='
-				                try {
+                                echo '===================Port Disconnect Start==================='
+                                try {
                                     sh(script:"re=`python /home/${USER_FOLDER_voice}/cbn/port_disconnect.py -n ${DUT_voice}` ;", returnStdout:true)
                                     echo '===================Port Disconnect Pass==================='
                                 } catch(err){
                                     echo '===================Port Disconnect Fail==================='
-            	                }
-            	                echo '===================Port Disconnect FINISH==================='   
+                                }
+            	                echo '===================Port Disconnect FINISH==================='
 				            }
                         }
                         node("gerben_test"){
@@ -705,7 +716,7 @@ stage('Daily Test - Generic') {
                                 } catch(err){
                                     echo '===================Port Disconnect Fail==================='
             	                }
-            	                echo '===================Port Disconnect FINISH==================='   
+            	                echo '===================Port Disconnect FINISH==================='
 				            }
                         }
                         node("gerben_test"){
