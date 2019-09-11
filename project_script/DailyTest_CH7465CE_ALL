@@ -91,6 +91,7 @@ def USER_NAME= "cbnmat"
 def USER_PWD= "just4mat"
 def Log_parser= "Null"
 def result_folder = "7465_result"
+def result_folder_2 = "CH7465CE_Daily"
 /*Connect Result User*/
 def USER_FOLDER_result = "gerben_test"
 
@@ -286,6 +287,14 @@ stage('Daily Test - Generic') {
                 				echo 'Copy ${result_name_daily} to ${result_folder} fail'
                 			}
                         }
+                        node("result_integration"){
+                            try{
+                                sh("cp /home/${USER_FOLDER_daily}/cbn/boardfarm/results/results.html /home/result_integration/${result_folder_2}/${testsuite_choose}.html")
+                                echo 'Copy result.html to result_integration pass'
+                            }catch(err){
+                                echo 'Copy result.html to result_integration fail'
+                            }
+                        }                        
                     }
                 }
                 if( "${Run_Test_Status_daily}" == "Run Test Success" &&  "${Test_Result_Grade_daily}" != "FAIL") break
@@ -431,6 +440,14 @@ stage('Daily Test - Generic') {
                 				echo 'Copy 7465 daily test result pass'
                 			}catch(err){
                 				echo 'Copy ${result_name_wifi} to ${result_folder} fail'
+                			}
+                        }
+                        node("result_integration"){
+                            try{
+                				sh("cp /home/${USER_FOLDER_wifi}/cbn/boardfarm/results/results.html /home/${USER_FOLDER_result}/${result_folder_2}/${result_name_wifi}")
+                				echo 'Copy 7465 daily test result pass'
+                			}catch(err){
+                				echo 'Copy ${result_name_wifi} to ${result_folder_2} fail'
                 			}
                         }
                     }
@@ -580,6 +597,14 @@ stage('Daily Test - Generic') {
                 				echo 'Copy ${result_name_voice} to ${result_folder} fail'
                 			}
                         }
+                        node("result_integration"){
+                            try{
+                				sh("cp /home/${USER_FOLDER_voice}/cbn/boardfarm/results/results.html /home/${USER_FOLDER_result}/${result_folder_2}/${result_name_voice}")
+                				echo 'Copy 7465 daily test result pass'
+                			}catch(err){
+                				echo 'Copy ${result_name_voice} to ${result_folder_2} fail'
+                			}
+                        }
                     }
                 }
                 if( "${Run_Test_Status_voice}" == "Run Test Success" &&  "${Test_Result_Grade_voice}" != "FAIL") break
@@ -725,6 +750,14 @@ stage('Daily Test - Generic') {
                 				echo 'Copy 7465 daily test result pass'
                 			}catch(err){
                 				echo 'Copy ${result_name_isolate} to ${result_folder} fail'
+                			}
+                        }
+                        node("result_integration"){
+                            try{
+                				sh("cp /home/${USER_FOLDER_isolate}/cbn/boardfarm/results/results.html /home/${USER_FOLDER_result}/${result_folder_2}/${result_name_isolate}")
+                				echo 'Copy 7465 daily test result pass'
+                			}catch(err){
+                				echo 'Copy ${result_name_isolate} to ${result_folder_2} fail'
                 			}
                         }
                     }
