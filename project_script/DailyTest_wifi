@@ -16,11 +16,12 @@ def TR_EMAIL_REPORT_FILE_Default 	= "DailyBuild_CH7465CE_2-Report-"
 def TR_EMAIL_CONSOLE_FILE_Default 	= "DailyBuild_CH7465CE_2-Console-"
 def TR_EMAIL_TEXT_FILE_daily		= "DailyBuild_CH7465CE_2-Text-"
 def TR_EMAIL_TEXT_FILE_wifi		= "DailyBuild_CH7465CE_2-Text-"
-def TR_EMAIL_TEXT_FILE_voice	= "DailyBuild_CH7465CE_2-Text-"
+def TR_EMAIL_TEXT_FILE_voice	     = "DailyBuild_CH7465CE_2-Text-"
 def TR_EMAIL_TEXT_FILE_isolate		= "DailyBuild_CH7465CE_2-Text-"
 def TR_EMAIL_REPORT_FILE_result 	= "DailyTest_CH7465CE_2-Report-"
 def TR_EMAIL_CONSOLE_FILE_result 	= "DailyBuild_CH7465CE_2-Console-"
 def TR_EMAIL_TEXT_FILE_result		= "DailyBuild_CH7465CE_2-Text-"
+
 /* Jenkins Server- (DailyBuild_CH7465CE) */
 def JENKINS_LOGIN_USR 			= "cbn"
 def JENKINS_IP 					= "172.16.1.218"
@@ -276,6 +277,16 @@ stage('Daily Test - Generic') {
                         		scp ./results.zip ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_TEXT_FILE_wifi}")
                 				echo "===================Compression File FINISH==================="
                 			}
+                                stage('Port Disconnect'){
+				                echo '===================Port Disconnect Start==================='
+				                try {
+                                    sh(script:"re=`python /home/${USER_FOLDER_isolate}/cbn/port_disconnect.py -n ${DUT_isolate}` ;", returnStdout:true)
+                                    echo '===================Port Disconnect Pass==================='
+                                } catch(err){
+                                    echo '===================Port Disconnect Fail==================='
+            	                }
+            	                echo '===================Port Disconnect FINISH==================='
+                                }
                         }
                         node("result_integration"){
                             try{
