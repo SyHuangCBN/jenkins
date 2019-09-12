@@ -85,6 +85,7 @@ def Jenkins_node_wifi = "cbn_wifi"
 def USER_FOLDER_wifi = "cbn_wifi"
 def result_name_wifi = "results_wifi.html"
 def feature_wifi = "-n mv1-2-5"
+def DUT_wifi = "mv1-2-5"
 def Run_Test_Status_wifi = ""
 /*Connect Global User*/
 def USER_NAME= "cbnmat"
@@ -280,7 +281,7 @@ stage('Daily Test - Generic') {
                                 stage('Port Disconnect'){
 				                echo '===================Port Disconnect Start==================='
 				                try {
-                                    sh(script:"re=`python /home/${USER_FOLDER_isolate}/cbn/port_disconnect.py -n ${DUT_isolate}` ;", returnStdout:true)
+                                    sh(script:"re=`python /home/${USER_FOLDER_wifi}/cbn/port_disconnect.py -n ${DUT_wifi}` ;", returnStdout:true)
                                     echo '===================Port Disconnect Pass==================='
                                 } catch(err){
                                     echo '===================Port Disconnect Fail==================='
