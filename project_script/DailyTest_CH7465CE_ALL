@@ -116,11 +116,6 @@ def Git_Clone_Success = "Git Clone Success"
 def Git_Clone_Fail = "Git Clone Falure"
 def Git_Clone_Status = ""
 
-/* Git Cm Cfg */
-def Copy_Cm_Cfg_Success = "Copy Cm Cfg Success"
-def Copy_Cm_Cfg_Fail = "Copy Cm Cfg Falure"
-def Copy_Cm_Cfg_Status = ""
-
 /* Run Test Status */
 def Run_Test_Success = "Run Test Success"
 def Run_Test_Fail    = "Run Test Failure"
@@ -259,25 +254,6 @@ stage('Daily Test - Generic') {
                 					echo "===================Parser test results for RootFSBootTest FINISH==================="
                 				}
                 			}
-                			stage('Copy Console Log'){
-                				echo "===================Copy Console Log START==================="
-                				Wed_Path_Url_daily 			= "http://${JENKINS_IP}:8080/job/${JOB_NAME}/lastBuild/consoleText"
-                				TR_EMAIL_CONSOLE_FILE_daily	= "${TR_EMAIL_CONSOLE_FILE_Default}${testsuite_choose_daily}-${DATE_STRING}.log"
-                				withCredentials([usernamePassword(credentialsId: '59dbf979-31c9-4fbc-8870-7cc7e91fd58e', usernameVariable: 'JENKINSUSER', passwordVariable: 'JENKINSPWD')]) {
-                					sh("cd ~/cbn/sign_image; \
-                        			curl -u ${JENKINSUSER}:${JENKINSPWD} ${Wed_Path_Url_daily} > console_output; \
-                        			scp ./console_output ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_CONSOLE_FILE_daily}")
-                				}
-                				echo "===================Copy Console Log FINISH==================="
-                			}
-                			stage('Compression File'){
-                				echo "===================Compression File START==================="
-                				TR_EMAIL_TEXT_FILE_daily="${TR_EMAIL_TEXT_FILE_daily}${DATE_STRING}.zip"
-                				sh("cd /home/${USER_FOLDER_daily}/cbn/boardfarm/results; \
-                        		zip results.zip *.txt *.log; \
-                        		scp ./results.zip ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_TEXT_FILE_daily}")
-                				echo "===================Compression File FINISH==================="
-                			}
                         }
                         node("gerben_test"){
                             try{
@@ -403,25 +379,6 @@ stage('Daily Test - Generic') {
                 					}
                 					echo "===================Parser test results for RootFSBootTest FINISH==================="
                 				}
-                			}
-                			stage('Copy Console Log'){
-                				echo "===================Copy Console Log START==================="
-                				Wed_Path_Url_wifi 			= "http://${JENKINS_IP}:8080/job/${JOB_NAME}/lastBuild/consoleText"
-                				TR_EMAIL_CONSOLE_FILE_wifi	= "${TR_EMAIL_CONSOLE_FILE_Default}${testsuite_choose_wifi}-${DATE_STRING}.log"
-                				withCredentials([usernamePassword(credentialsId: '59dbf979-31c9-4fbc-8870-7cc7e91fd58e', usernameVariable: 'JENKINSUSER', passwordVariable: 'JENKINSPWD')]) {
-                					sh("cd ~/cbn/sign_image; \
-                        			curl -u ${JENKINSUSER}:${JENKINSPWD} ${Wed_Path_Url_wifi} > console_output; \
-                        			scp ./console_output ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_CONSOLE_FILE_wifi}")
-                				}
-                				echo "===================Copy Console Log FINISH==================="
-                			}
-                			stage('Compression File'){
-                				echo "===================Compression File START==================="
-                				TR_EMAIL_TEXT_FILE_wifi="${TR_EMAIL_TEXT_FILE_wifi}${DATE_STRING}.zip"
-                				sh("cd /home/${USER_FOLDER_wifi}/cbn/boardfarm/results; \
-                        		zip results.zip *.txt *.log; \
-                        		scp ./results.zip ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_TEXT_FILE_wifi}")
-                				echo "===================Compression File FINISH==================="
                 			}
                             stage('Port Disconnect'){
                                 echo '===================Port Disconnect Start==================='
@@ -559,25 +516,6 @@ stage('Daily Test - Generic') {
                 					echo "===================Parser test results for RootFSBootTest FINISH==================="
                 				}
                 			}
-                			stage('Copy Console Log'){
-                				echo "===================Copy Console Log START==================="
-                				Wed_Path_Url_voice 			= "http://${JENKINS_IP}:8080/job/${JOB_NAME}/lastBuild/consoleText"
-                				TR_EMAIL_CONSOLE_FILE_voice	= "${TR_EMAIL_CONSOLE_FILE_Default}${testsuite_choose_voice}-${DATE_STRING}.log"
-                				withCredentials([usernamePassword(credentialsId: '59dbf979-31c9-4fbc-8870-7cc7e91fd58e', usernameVariable: 'JENKINSUSER', passwordVariable: 'JENKINSPWD')]) {
-                					sh("cd ~/cbn/sign_image; \
-                        			curl -u ${JENKINSUSER}:${JENKINSPWD} ${Wed_Path_Url_voice} > console_output; \
-                        			scp ./console_output ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_CONSOLE_FILE_voice}")
-                				}
-                				echo "===================Copy Console Log FINISH==================="
-                			}
-                			stage('Compression File'){
-                				echo "===================Compression File START==================="
-                				TR_EMAIL_TEXT_FILE_voice="${TR_EMAIL_TEXT_FILE_voice}${DATE_STRING}.zip"
-                				sh("cd /home/${USER_FOLDER_voice}/cbn/boardfarm/results; \
-                        		zip results.zip *.txt *.log; \
-                        		scp ./results.zip ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_TEXT_FILE_voice}")
-                				echo "===================Compression File FINISH==================="
-                			}
                 			stage('Port Disconnect'){
                                 echo '===================Port Disconnect Start==================='
                                 try {
@@ -713,25 +651,6 @@ stage('Daily Test - Generic') {
                 					}
                 					echo "===================Parser test results for RootFSBootTest FINISH==================="
                 				}
-                			}
-                			stage('Copy Console Log'){
-                				echo "===================Copy Console Log START==================="
-                				Wed_Path_Url_isolate 			= "http://${JENKINS_IP}:8080/job/${JOB_NAME}/lastBuild/consoleText"
-                				TR_EMAIL_CONSOLE_FILE_isolate	= "${TR_EMAIL_CONSOLE_FILE_Default}${testsuite_choose_isolate}-${DATE_STRING}.log"
-                				withCredentials([usernamePassword(credentialsId: '59dbf979-31c9-4fbc-8870-7cc7e91fd58e', usernameVariable: 'JENKINSUSER', passwordVariable: 'JENKINSPWD')]) {
-                					sh("cd ~/cbn/sign_image; \
-                        			curl -u ${JENKINSUSER}:${JENKINSPWD} ${Wed_Path_Url_isolate} > console_output; \
-                        			scp ./console_output ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_CONSOLE_FILE_isolate}")
-                				}
-                				echo "===================Copy Console Log FINISH==================="
-                			}
-                			stage('Compression File'){
-                				echo "===================Compression File START==================="
-                				TR_EMAIL_TEXT_FILE_isolate="${TR_EMAIL_TEXT_FILE_isolate}${DATE_STRING}.zip"
-                				sh("cd /home/${USER_FOLDER_isolate}/cbn/boardfarm/results; \
-                        		zip results.zip *.txt *.log; \
-                        		scp ./results.zip ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_TEXT_FILE_isolate}")
-                				echo "===================Compression File FINISH==================="
                 			}
                 			stage('Port Disconnect'){
 				                echo '===================Port Disconnect Start==================='
