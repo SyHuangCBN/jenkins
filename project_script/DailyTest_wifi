@@ -289,6 +289,14 @@ stage('Daily Test - Generic') {
             	                echo '===================Port Disconnect FINISH==================='
                                 }
                         }
+                        node("gerben_test"){
+                            try{
+                			sh("cp /home/${USER_FOLDER_wifi}/cbn/boardfarm/results/results.html /home/gerben_test/${result_folder}/${result_name_wifi}")
+                                echo 'Copy 7465 daily test result pass'
+                            }catch(err){
+                                echo 'Copy ${result_name_wifi} to ${result_folder} fail'
+                            }
+                        }
                         node("result_integration"){
                             try{
                 				sh("cp /home/${USER_FOLDER_wifi}/cbn/boardfarm/results/results.html /home/${USER_FOLDER_result}/${result_folder}/${result_name_wifi}")

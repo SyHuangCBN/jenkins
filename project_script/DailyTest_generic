@@ -269,6 +269,14 @@ stage('Daily Test - Generic') {
                 				echo "===================Copy Console Log FINISH==================="
                 			}
                         }
+                        node("gerben_test"){
+                            try{
+                			sh("cp /home/${USER_FOLDER_daily}/cbn/boardfarm/results/results.html /home/gerben_test/${result_folder}/${result_name_daily}")
+                                echo 'Copy 7465 daily test result pass'
+                            }catch(err){
+                                echo 'Copy ${result_name_daily} to ${result_folder} fail'
+                            }
+                        }
                         node("result_integration"){
                             try{
                                 sh("cp /home/${USER_FOLDER_daily}/cbn/boardfarm/results/results.html /home/result_integration/${result_folder2}/${testsuite_choose}.html")
