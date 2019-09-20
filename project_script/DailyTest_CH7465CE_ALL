@@ -1,5 +1,3 @@
-/* Last Modified:20190621 1600 */
-
 /* ARM & ATOM Git change log file name */
 def GIT_LOG_FNAME_ARM = "DailyBuild_ARM-ChangeLog-"
 def GIT_LOG_FNAME_ATOM = "DailyBuild_ATOM-ChangeLog-"
@@ -33,8 +31,12 @@ def BOARDFARM_IP = "172.16.1.218"
 def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
 def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
 //def bft_config = "http://172.16.1.237/boardfarm/api/bf_config"
-def bft_overlay = '"../boardfarm-cbn ../boardfarm-docsis"'
 def bft_config = "../boardfarm-cbn/cbn.json"
+def bft_overlay = '"../boardfarm-cbn ../boardfarm-docsis"'
+def voice_bft_config = "http://172.16.1.237/boardfarm/api/bf_config"
+def voice_bft_overlay = '"/home/cbn_voice/cbn/boardfarm-cbn /home/cbn_voice/cbn/boardfarm-docsis /home/cbn_voice/cbn/boardfarm-intel"'
+def isolated_bft_config = "../boardfarm-cbn/cbn.json"
+def isolated_bft_overlay = '"../boardfarm-cbn ../boardfarm-docsis ../boardfarm-intel"'
 /* CH7465CE Profile */
 def ARM_PROFILE_NAME = "ch7465c_lgi"
 def ARM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}.log"
@@ -59,7 +61,8 @@ def DATE_STRING = ""
 def DAILY_BUILD_FOLDER = "dailybuild"
 
 /* E-mail*/
-def TEMP_RECIPIENT= "gerben_chen@compalbn.com, lynn_lin@compalbn.com, martin_wu@compalbn.com, nero_chen@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+def TEMP_RECIPIENT = "gerben_chen@compalbn.com, lynn_lin@compalbn.com, martin_wu@compalbn.com, nero_chen@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+def TEMP_RECIPIENT1 = "lynn_lin@compalbn.com"
 /* Connect Daily User*/
 def USER_FOLDER_daily = "cbn_daily"
 def Jenkins_node_daily = "cbn_daily"
@@ -83,8 +86,8 @@ def Run_Test_Status_voice = ""
 def Jenkins_node_wifi = "cbn_wifi"
 def USER_FOLDER_wifi = "cbn_wifi"
 def result_name_wifi = "results_wifi.html"
-def feature_wifi = "-n mv1-2-5"
-def DUT_wifi = "mv1-2-5"
+def feature_wifi = "-n mv1-2-6"
+def DUT_wifi = "mv1-2-6"
 def Run_Test_Status_wifi = ""
 /*Connect Global User*/
 def USER_NAME= "cbnmat"
@@ -115,6 +118,8 @@ def Upgrade_FW_Status  = ""
 def Git_Clone_Success = "Git Clone Success"
 def Git_Clone_Fail = "Git Clone Falure"
 def Git_Clone_Status = ""
+/*git open or not */
+def git_open = "n"
 
 /* Run Test Status */
 def Run_Test_Success = "Run Test Success"
@@ -180,33 +185,35 @@ stage('Daily Test - Generic') {
                                 }
                                 echo "===================Remove Old Result FINISH==================="
                             }
-                            stage('Git Clone'){
-                				echo "===================Git Clone START==================="
-                        		try {
-                        			sh("(/home/${USER_FOLDER_daily}/cbn/git_clone_cmd)")
-                        			echo 'Git Clone Success'
-                                    Git_Clone_Status = "${Git_Clone_Success}"
-                        		} catch (err){
-                        		    echo "${err}"
-                        			echo 'Git Clone Falure'
-                        			Git_Clone_Status = "${Git_Clone_Fail}"
-                        		}
-                        		echo "Starting Git Clone actions..."
-                        		echo "Git_Clone_Status = ${Git_Clone_Status}"
-                        		if(Git_Clone_Status == "${Git_Clone_Fail}") {
-                        			Daily_result = 'FAILURE'
+							if (git_open != "n"){
+								stage('Git Clone'){
+									echo "===================Git Clone START==================="
+									try {
+										sh("(/home/${USER_FOLDER_daily}/cbn/git_clone_cmd)")
+										echo 'Git Clone Success'
+										Git_Clone_Status = "${Git_Clone_Success}"
+									} catch (err){
+										echo "${err}"
+										echo 'Git Clone Falure'
+										Git_Clone_Status = "${Git_Clone_Fail}"
+									}
+									echo "Starting Git Clone actions..."
+									echo "Git_Clone_Status = ${Git_Clone_Status}"
+									if(Git_Clone_Status == "${Git_Clone_Fail}") {
+										Daily_result = 'FAILURE'
 
-                        			//send email
-                        			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
-                        			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                        			replyTo: '$DEFAULT_REPLYTO',
-                        			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Daily_result} (${Git_Clone_Status})",
-                        			//to: '$DEFAULT_RECIPIENTS'
-                        			to: "${TEMP_RECIPIENT}"
-                        			error 'Post-Git Clone actions:Git Clone Fail'
-                        		}
-                				echo "===================Git Clone FINISH==================="
-                            }
+										//send email
+										emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+										recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+										replyTo: '$DEFAULT_REPLYTO',
+										subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Daily_result} (${Git_Clone_Status})",
+										//to: '$DEFAULT_RECIPIENTS'
+										to: "${TEMP_RECIPIENT}"
+										error 'Post-Git Clone actions:Git Clone Fail'
+									}
+									echo "===================Git Clone FINISH==================="
+								}
+							}
                             stage('Run CH7465CE Test'){
                                 echo "===================Run CH7465CE Test START==================="
                                 try {
@@ -285,7 +292,7 @@ stage('Daily Test - Generic') {
                 replyTo: '$DEFAULT_REPLYTO',
                 subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_daily} - (${Daily_result}),${FI_SH_PA_FILE}",
                 //to: '$DEFAULT_RECIPIENTS'
-                to: "${TEMP_RECIPIENT}"
+				to: "${TEMP_RECIPIENT}"
                 echo 'Completed daily build and daily testing'
             }
         },//END Generic Task
@@ -306,33 +313,35 @@ stage('Daily Test - Generic') {
                                 }
                                 echo "===================Remove Old Result FINISH==================="
                             }
-                        	 stage('Git Clone'){
-                				echo "===================Git Clone START==================="
-                        		try {
-                        			sh("(/home/${USER_FOLDER_wifi}/cbn/git_clone_cmd)")
-                        			echo 'Git Clone Success'
-                                    Git_Clone_Status = "${Git_Clone_Success}"
-                        		} catch (err){
-                        		    echo "${err}"
-                        			echo 'Git Clone Falure'
-                        			Git_Clone_Status = "${Git_Clone_Fail}"
-                        		}
-                        		echo "Starting Git Clone actions..."
-                        		echo "Git_Clone_Status = ${Git_Clone_Status}"
-                        		if(Git_Clone_Status == "${Git_Clone_Fail}") {
-                        			Wifi_result = 'FAILURE'
+							if (git_open != "n"){
+								stage('Git Clone'){
+									echo "===================Git Clone START==================="
+									try {
+										sh("(/home/${USER_FOLDER_wifi}/cbn/git_clone_cmd)")
+										echo 'Git Clone Success'
+										Git_Clone_Status = "${Git_Clone_Success}"
+									} catch (err){
+										echo "${err}"
+										echo 'Git Clone Falure'
+										Git_Clone_Status = "${Git_Clone_Fail}"
+									}
+									echo "Starting Git Clone actions..."
+									echo "Git_Clone_Status = ${Git_Clone_Status}"
+									if(Git_Clone_Status == "${Git_Clone_Fail}") {
+										Wifi_result = 'FAILURE'
 
-                        			//send email
-                        			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
-                        			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                        			replyTo: '$DEFAULT_REPLYTO',
-                        			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Wifi_result} (${Git_Clone_Status})",
-                        			//to: '$DEFAULT_RECIPIENTS'
-                        			to: "${TEMP_RECIPIENT}"
-                        			error 'Post-Git Clone actions:Git Clone Fail'
-                        		}
-                				echo "===================Git Clone FINISH==================="
-                            }
+										//send email
+										emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+										recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+										replyTo: '$DEFAULT_REPLYTO',
+										subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Wifi_result} (${Git_Clone_Status})",
+										//to: '$DEFAULT_RECIPIENTS'
+										to: "${TEMP_RECIPIENT}"
+										error 'Post-Git Clone actions:Git Clone Fail'
+									}
+									echo "===================Git Clone FINISH==================="
+								}
+							}
                             stage('Run CH7465CE Test'){
                                 echo "===================Run CH7465CE Test START==================="
                                 try {
@@ -421,7 +430,7 @@ stage('Daily Test - Generic') {
                 replyTo: '$DEFAULT_REPLYTO',
                 subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_wifi} - (${Wifi_result}), ${FI_SH_PA_FILE}",
                 //to: '$DEFAULT_RECIPIENTS'
-                to: "${TEMP_RECIPIENT}"
+				to: "${TEMP_RECIPIENT}"
                 echo 'Completed daily build and daily testing'
             }
         },//END WIFI Task
@@ -442,38 +451,40 @@ stage('Daily Test - Generic') {
                                 }
                                 echo "===================Remove Old Result FINISH==================="
                             }
-                            stage('Git Clone'){
-                				echo "===================Git Clone START==================="
-                        		try {
-                        			sh("(/home/${USER_FOLDER_voice}/cbn/git_clone_cmd)")
-                        			echo 'Git Clone Success'
-                                    Git_Clone_Status = "${Git_Clone_Success}"
-                        		} catch (err){
-                        		    echo "${err}"
-                        			echo 'Git Clone Falure'
-                        			Git_Clone_Status = "${Git_Clone_Fail}"
-                        		}
-                        		echo "Starting Git Clone actions..."
-                        		echo "Git_Clone_Status = ${Git_Clone_Status}"
-                        		if(Git_Clone_Status == "${Git_Clone_Fail}") {
-                        			Voice_result = 'FAILURE'
+							if (git_open != "n"){
+								stage('Git Clone'){
+									echo "===================Git Clone START==================="
+									try {
+										sh("(/home/${USER_FOLDER_voice}/cbn/git_clone_cmd)")
+										echo 'Git Clone Success'
+										Git_Clone_Status = "${Git_Clone_Success}"
+									} catch (err){
+										echo "${err}"
+										echo 'Git Clone Falure'
+										Git_Clone_Status = "${Git_Clone_Fail}"
+									}
+									echo "Starting Git Clone actions..."
+									echo "Git_Clone_Status = ${Git_Clone_Status}"
+									if(Git_Clone_Status == "${Git_Clone_Fail}") {
+										Voice_result = 'FAILURE'
 
-                        			//send email
-                        			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
-                        			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                        			replyTo: '$DEFAULT_REPLYTO',
-                        			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Voice_result} (${Git_Clone_Status})",
-                        			//to: '$DEFAULT_RECIPIENTS'
-                        			to: "${TEMP_RECIPIENT}"
-                        			error 'Post-Git Clone actions:Git Clone Fail'
-                        		}
-                				echo "===================Git Clone FINISH==================="
-                            }
+										//send email
+										emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+										recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+										replyTo: '$DEFAULT_REPLYTO',
+										subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Voice_result} (${Git_Clone_Status})",
+										//to: '$DEFAULT_RECIPIENTS'
+										to: "${TEMP_RECIPIENT}"
+										error 'Post-Git Clone actions:Git Clone Fail'
+									}
+									echo "===================Git Clone FINISH==================="
+								}
+							}
                             stage('Run CH7465CE Test'){
                                 echo "===================Run CH7465CE Test START==================="
                                 try {
-                                    sh("(export BFT_CONFIG=${bft_config}; \
-                                    export BFT_OVERLAY=${bft_overlay}; \
+                                    sh("(export BFT_CONFIG=${voice_bft_config}; \
+                                    export BFT_OVERLAY=${voice_bft_overlay}; \
                                     cd /home/${USER_FOLDER_voice}/cbn/boardfarm; \
                                     /home/${USER_FOLDER_voice}/cbn/boardfarm/bft -b mv1 -x ${testsuite_choose_voice} -m ${FI_SH_NNEMN_P7_FILE_HTTP} -s ${FI_SH_NNEMN_P7_FILE} ${feature_voice})")
                                     Run_Test_Status_voice = "${Run_Test_Success}"
@@ -557,7 +568,7 @@ stage('Daily Test - Generic') {
                 replyTo: '$DEFAULT_REPLYTO',
                 subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_voice} - (${Voice_result}), ${FI_SH_PA_FILE}",
                 //to: '$DEFAULT_RECIPIENTS'
-                to: "${TEMP_RECIPIENT}"
+				to: "${TEMP_RECIPIENT}"
                 echo 'Completed daily build and daily testing'
             }
         },//END Voice Task
@@ -578,38 +589,40 @@ stage('Daily Test - Generic') {
                                 }
                                 echo "===================Remove Old Result FINISH==================="
                             }
-                            stage('Git Clone'){
-                				echo "===================Git Clone START==================="
-                        		try {
-                        			sh("(/home/${USER_FOLDER_isolate}/cbn/git_clone_cmd)")
-                        			echo 'Git Clone Success'
-                                    Git_Clone_Status = "${Git_Clone_Success}"
-                        		} catch (err){
-                        		    echo "${err}"
-                        			echo 'Git Clone Falure'
-                        			Git_Clone_Status = "${Git_Clone_Fail}"
-                        		}
-                        		echo "Starting Git Clone actions..."
-                        		echo "Git_Clone_Status = ${Git_Clone_Status}"
-                        		if(Git_Clone_Status == "${Git_Clone_Fail}") {
-                        			Isolate_result = 'FAILURE'
+							if (git_open != "n"){
+								stage('Git Clone'){
+									echo "===================Git Clone START==================="
+									try {
+										sh("(/home/${USER_FOLDER_isolate}/cbn/git_clone_cmd)")
+										echo 'Git Clone Success'
+										Git_Clone_Status = "${Git_Clone_Success}"
+									} catch (err){
+										echo "${err}"
+										echo 'Git Clone Falure'
+										Git_Clone_Status = "${Git_Clone_Fail}"
+									}
+									echo "Starting Git Clone actions..."
+									echo "Git_Clone_Status = ${Git_Clone_Status}"
+									if(Git_Clone_Status == "${Git_Clone_Fail}") {
+										Isolate_result = 'FAILURE'
 
-                        			//send email
-                        			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
-                        			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                        			replyTo: '$DEFAULT_REPLYTO',
-                        			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Isolate_result} (${Git_Clone_Status})",
-                        			//to: '$DEFAULT_RECIPIENTS'
-                        			to: "${TEMP_RECIPIENT}"
-                        			error 'Post-Git Clone actions:Git Clone Fail'
-                        		}
-                				echo "===================Git Clone FINISH==================="
-                            }
+										//send email
+										emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+										recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+										replyTo: '$DEFAULT_REPLYTO',
+										subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Isolate_result} (${Git_Clone_Status})",
+										//to: '$DEFAULT_RECIPIENTS'
+										to: "${TEMP_RECIPIENT}"
+										error 'Post-Git Clone actions:Git Clone Fail'
+									}
+									echo "===================Git Clone FINISH==================="
+								}
+							}
                             stage('Run CH7465CE Test'){
                                 echo "===================Run CH7465CE Test START==================="
                                 try {
-                                    sh("(export BFT_CONFIG=${bft_config}; \
-                                    export BFT_OVERLAY=${bft_overlay}; \
+                                    sh("(export BFT_CONFIG=${isolated_bft_config}; \
+                                    export BFT_OVERLAY=${isolated_bft_overlay}; \
                                     cd /home/${USER_FOLDER_isolate}/cbn/boardfarm; \
                                     /home/${USER_FOLDER_isolate}/cbn/boardfarm/bft -b mv1 -x ${testsuite_choose_isolate} -m ${FI_SH_NNEMN_P7_FILE_HTTP} -s ${FI_SH_NNEMN_P7_FILE} ${feature_isolate})")
                                     Run_Test_Status_isolate = "${Run_Test_Success}"
@@ -693,7 +706,7 @@ stage('Daily Test - Generic') {
                 replyTo: '$DEFAULT_REPLYTO',
                 subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_isolate} - (${Isolate_result}), ${FI_SH_PA_FILE}",
                 //to: '$DEFAULT_RECIPIENTS'
-                to: "${TEMP_RECIPIENT}"
+				to: "${TEMP_RECIPIENT}"
                 echo 'Completed daily build and daily testing'
             }
         },//END Isolate Task
@@ -743,9 +756,7 @@ node("master"){
     recipientProviders: [[$class: 'DevelopersRecipientProvider']],
     replyTo: '$DEFAULT_REPLYTO',
     subject: "${JOB_NAME} - Result - Build # ${BUILD_NUMBER} - (${currentBuild.result}),${FI_SH_PA_FILE}",
-    to: "${TEMP_RECIPIENT}"
     //to: '$DEFAULT_RECIPIENTS'
-
-
+	to: "${TEMP_RECIPIENT}"
     echo 'Completed daily build and daily testing'
 }
