@@ -59,7 +59,8 @@ def DATE_STRING = ""
 def DAILY_BUILD_FOLDER = "dailybuild"
 
 /* E-mail*/
-def TEMP_RECIPIENT= "gerben_chen@compalbn.com, lynn_lin@compalbn.com, martin_wu@compalbn.com, nero_chen@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+def TEMP_RECIPIENT1 = "gerben_chen@compalbn.com, lynn_lin@compalbn.com, martin_wu@compalbn.com, nero_chen@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+def TEMP_RECIPIENT = "lynn_lin@compalbn.com"
 /* Connect Daily User*/
 def USER_FOLDER_daily = "cbn_daily"
 def Jenkins_node_daily = "cbn_daily"
@@ -114,6 +115,8 @@ def Upgrade_FW_Status  = ""
 def Git_Clone_Success = "Git Clone Success"
 def Git_Clone_Fail = "Git Clone Falure"
 def Git_Clone_Status = ""
+/*git open or not */
+def git_open = "n"
 
 /* Git Cm Cfg */
 def Copy_Cm_Cfg_Success = "Copy Cm Cfg Success"
@@ -184,33 +187,35 @@ stage('Daily Test - Generic') {
                                 }
                                 echo "===================Remove Old Result FINISH==================="
                             }
-                            stage('Git Clone'){
-                				echo "===================Git Clone START==================="
-                        		try {
-                        			sh("(/home/${USER_FOLDER_voice}/cbn/git_clone_cmd)")
-                        			echo 'Git Clone Success'
-                                    Git_Clone_Status = "${Git_Clone_Success}"
-                        		} catch (err){
-                        		    echo "${err}"
-                        			echo 'Git Clone Falure'
-                        			Git_Clone_Status = "${Git_Clone_Fail}"
-                        		}
-                        		echo "Starting Git Clone actions..."
-                        		echo "Git_Clone_Status = ${Git_Clone_Status}"
-                        		if(Git_Clone_Status == "${Git_Clone_Fail}") {
-                        			Voice_result = 'FAILURE'
+							if (git_open != "n"){
+								stage('Git Clone'){
+									echo "===================Git Clone START==================="
+									try {
+										sh("(/home/${USER_FOLDER_voice}/cbn/git_clone_cmd)")
+										echo 'Git Clone Success'
+										Git_Clone_Status = "${Git_Clone_Success}"
+									} catch (err){
+										echo "${err}"
+										echo 'Git Clone Falure'
+										Git_Clone_Status = "${Git_Clone_Fail}"
+									}
+									echo "Starting Git Clone actions..."
+									echo "Git_Clone_Status = ${Git_Clone_Status}"
+									if(Git_Clone_Status == "${Git_Clone_Fail}") {
+										Voice_result = 'FAILURE'
 
-                        			//send email
-                        			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
-                        			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                        			replyTo: '$DEFAULT_REPLYTO',
-                        			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Voice_result} (${Git_Clone_Status})",
-                        			//to: '$DEFAULT_RECIPIENTS'
-                        			to: "${TEMP_RECIPIENT}"
-                        			error 'Post-Git Clone actions:Git Clone Fail'
-                        		}
-                				echo "===================Git Clone FINISH==================="
-                            }
+										//send email
+										emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+										recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+										replyTo: '$DEFAULT_REPLYTO',
+										subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Voice_result} (${Git_Clone_Status})",
+										//to: '$DEFAULT_RECIPIENTS'
+										to: "${TEMP_RECIPIENT}"
+										error 'Post-Git Clone actions:Git Clone Fail'
+									}
+									echo "===================Git Clone FINISH==================="
+								}
+							}
                             stage('Run CH7465CE Test'){
                                 echo "===================Run CH7465CE Test START==================="
                                 try {
