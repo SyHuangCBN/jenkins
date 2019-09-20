@@ -1,5 +1,3 @@
-/* Version 1.0 20190801 1800 */
-
 /* ARM & ATOM Git change log file name */
 def GIT_LOG_FNAME_ARM = "DailyBuild_ARM-ChangeLog-"
 def GIT_LOG_FNAME_ATOM = "DailyBuild_ATOM-ChangeLog-"
@@ -60,7 +58,7 @@ def DATE_STRING = ""
 def DAILY_BUILD_FOLDER = "dailybuild"
 
 /* E-mail*/
-def TEMP_RECIPIENT= "gerben_chen@compalbn.com, lynn_lin@compalbn.com, martin_wu@compalbn.com, nero_chen@compalbn.com, luke_tseng@compalbn.com, samuel_chuang@compalbn.com"
+def TEMP_RECIPIENT= "lynn_lin@compalbn.com"
 /* Connect Daily User*/
 def USER_FOLDER_daily = "cbn_daily"
 def Jenkins_node_daily = "cbn_daily"
