@@ -57,7 +57,7 @@ def DATE_STRING = ""
 def DAILY_BUILD_FOLDER = "dailybuild"
 
 /* E-mail*/
-def TEMP_RECIPIENT= "lynn_lin@compalbn.com"
+def TEMP_RECIPIENT= "lynn_lin@compalbn.com, jessie_hsieh@compalbn.com"
 /* Connect Voice User*/
 def USER_FOLDER_voice = "cbn_voice"
 def Jenkins_node_voice = "cbn_voice"

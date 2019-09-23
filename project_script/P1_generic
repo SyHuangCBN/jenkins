@@ -31,9 +31,8 @@ def BOARDFARM_IP = "172.16.1.218"
 def BOARDFARM_TFTP_ROOT = "/home/cbn/FW_space"
 def BOARDFARM_SLAVE_HOME ="/home/cbn/jenkins_slave/workspace/${JOB_NAME}"
 //def bft_config = "http://172.16.1.237/boardfarm/api/bf_config"
+def bft_overlay = '"../boardfarm-cbn ../boardfarm-docsis"'
 def bft_config = "../boardfarm-cbn/cbn.json"
-def bft_overlay = '"../boardfarm-cbn ../boardfarm-docsis ../boardfarm-intel"'
-
 /* CH7465CE Profile */
 def ARM_PROFILE_NAME = "ch7465c_lgi"
 def ARM_BUILD_CODE_LOG = "${ARM_PROFILE_NAME}.log"
@@ -58,15 +57,13 @@ def DATE_STRING = ""
 def DAILY_BUILD_FOLDER = "dailybuild"
 
 /* E-mail*/
-def TEMP_RECIPIENT= "lynn_lin@compalbn.com, jessie_hsieh@compalbn.com"
-/* Connect Isolate User*/
-def USER_FOLDER_isolate = "cbn_isolate"
-def Jenkins_node_isolate = "cbn_isolate"
-def result_name_isolate = "results_isolate.html"
-def result_isolate_folder = "ntl_isolate"
-def feature_isolate = "-n mv1-1-23"
-def DUT_isolate = "mv1-1-23"
-def Run_Test_Status_isolate = ""
+def TEMP_RECIPIENT= "lynn_lin@compalbn.com"
+/* Connect Daily User*/
+def USER_FOLDER_daily = "cbn_daily"
+def Jenkins_node_daily = "cbn_daily"
+def result_name_daily = "results_daily.html"
+def result_generic_folder = "ntl_generic"
+def Run_Test_Status_daily = ""
 /*Connect Global User*/
 def USER_NAME= "cbnmat"
 def USER_PWD= "just4mat"
@@ -115,11 +112,11 @@ node("master"){
 		FI_SH_PA_FILE = "${FI_SH_PA_FILE_HEAD}${FI_SH_PA_FILE_MID}${FI_SH_PA_FILE_TAIL}"
     }
 }
-node("${Jenkins_node_isolate}"){
+node("${Jenkins_node_daily}"){
     stage('Check HTTP FW NAME -s'){
         echo "===================Check HTTP FW NAME -m START==================="
         try{
-	        FI_SH_NNEMN_P7_FILE = sh(script:"re=`python /home/${USER_FOLDER_isolate}/cbn/mailname_check.py` ; printf \$re ", returnStdout:true)
+	        FI_SH_NNEMN_P7_FILE = sh(script:"re=`python /home/${USER_FOLDER_daily}/cbn/mailname_check.py` ; printf \$re ", returnStdout:true)
 	        //FI_SH_NNEMN_P7_FILE_HTTP = "CH7465LG-NCIP-6.15.28-20190625-SH-PA.NNEMN.p7"
 	        echo "FI_SH_NNEMN_P7_FILE_HTTP: ${FI_SH_NNEMN_P7_FILE}"
         }catch(err){
@@ -130,7 +127,7 @@ node("${Jenkins_node_isolate}"){
     stage('Check HTTP FW NAME -m'){
         echo "===================Check HTTP FW NAME -m START==================="
         try{
-	        FI_SH_NNEMN_P7_FILE_HTTP = sh(script:"re=`python /home/${USER_FOLDER_isolate}/cbn/fwname_check.py` ; printf \$re ", returnStdout:true)
+	        FI_SH_NNEMN_P7_FILE_HTTP = sh(script:"re=`python /home/${USER_FOLDER_daily}/cbn/fwname_check.py` ; printf \$re ", returnStdout:true)
 	        //FI_SH_NNEMN_P7_FILE = "http://172.16.1.2/CH7465LG-NCIP-6.15.28-20190625-SH-PA.NNEMN.p7"
 	        echo "FI_SH_NNEMN_P7_FILE_HTTP: ${FI_SH_NNEMN_P7_FILE_HTTP}"
         }catch(err){
@@ -141,7 +138,7 @@ node("${Jenkins_node_isolate}"){
     stage('Remove Old Result'){
         echo "===================Remove Old Result START==================="
         try{
-            sh("cd /home/${USER_FOLDER_isolate}/cbn/boardfarm/${result_isolate_folder}/ && rm *.txt")
+            sh("cd /home/${USER_FOLDER_daily}/cbn/boardfarm/${result_generic_folder}/ && rm *.txt")
         }catch(err){
             echo "Txt File Is Empty"
         }
@@ -150,64 +147,63 @@ node("${Jenkins_node_isolate}"){
 }
 stage('Daily Test - Generic') {
     parallel (
-        "Build Daily Isolate Task" :{
+        "Build Daily Generic Task" :{
             while( true ) {
-                list = ["cbn_isolated_daily"]
-                list_count = list.size()
-                for (int i = 0; i < list_count; i++) {
-                    testsuite_choose_isolate = list[i]
+                daily_list = ["cbn_generic_daily"]
+                daily_list_count = daily_list.size()
+                for (int i = 0; i < daily_list_count; i++) {
+                    testsuite_choose_daily = daily_list[i]
                     timestamps {
-                        node("${Jenkins_node_isolate}"){
+                        node("${Jenkins_node_daily}"){
                             stage('Remove Old Result'){
                                 echo "===================Remove Old Result START==================="
                                 try{
-                                    sh("cd /home/${USER_FOLDER_isolate}/cbn/boardfarm/${result_isolate_folder}/ && rm *.txt")
+                                    sh("cd /home/${USER_FOLDER_daily}/cbn/boardfarm/${result_generic_folder}/ && rm *.txt")
                                 }catch(err){
                                     echo "Txt File Is Empty"
                                 }
                                 echo "===================Remove Old Result FINISH==================="
                             }
-                            /*
-                            stage('Git Clone')
-                            {
-                    				echo "===================Git Clone START==================="
-                            		try {
-                            			sh("(/home/${USER_FOLDER_isolate}/cbn/git_clone_cmd)")
-                            			echo 'Git Clone Success'
-                                        Git_Clone_Status = "${Git_Clone_Success}"
-                            		} catch (err){
-                            		    echo "${err}"
-                            			echo 'Git Clone Falure'
-                            			Git_Clone_Status = "${Git_Clone_Fail}"
-                            		}
-                            		echo "Starting Git Clone actions..."
-                            		echo "Git_Clone_Status = ${Git_Clone_Status}"
-                            		if(Git_Clone_Status == "${Git_Clone_Fail}") {
-                            			Isolate_result = 'FAILURE'
-    
-                            			//send email
-                            			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
-                            			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                            			replyTo: '$DEFAULT_REPLYTO',
-                            			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Isolate_result} (${Git_Clone_Status})",
-                            			//to: '$DEFAULT_RECIPIENTS'
-                            			to: "${TEMP_RECIPIENT}"
-                            			error 'Post-Git Clone actions:Git Clone Fail'
-                            		}
-                    				echo "===================Git Clone FINISH==================="
+							/*
+                            stage('Git Clone'){
+                				echo "===================Git Clone START==================="
+                        		try {
+                        			sh("(/home/${USER_FOLDER_daily}/cbn/git_clone_cmd)")
+                        			echo 'Git Clone Success'
+                                    Git_Clone_Status = "${Git_Clone_Success}"
+                        		} catch (err){
+                        		    echo "${err}"
+                        			echo 'Git Clone Falure'
+                        			Git_Clone_Status = "${Git_Clone_Fail}"
+                        		}
+                        		echo "Starting Git Clone actions..."
+                        		echo "Git_Clone_Status = ${Git_Clone_Status}"
+                        		if(Git_Clone_Status == "${Git_Clone_Fail}") {
+                        			Daily_result = 'FAILURE'
+
+                        			//send email
+                        			emailext body: '${JELLY_SCRIPT,template=\"template_git.jelly\"}',
+                        			recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                        			replyTo: '$DEFAULT_REPLYTO',
+                        			subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${Daily_result} (${Git_Clone_Status})",
+                        			//to: '$DEFAULT_RECIPIENTS'
+                        			to: "${TEMP_RECIPIENT}"
+                        			error 'Post-Git Clone actions:Git Clone Fail'
+                        		}
+                				echo "===================Git Clone FINISH==================="
                             }
-                            */
+							*/
                             stage('Run CH7465CE Test'){
                                 echo "===================Run CH7465CE Test START==================="
                                 try {
                                     sh("(export BFT_CONFIG=${bft_config}; \
                                     export BFT_OVERLAY=${bft_overlay}; \
-                                    cd /home/${USER_FOLDER_isolate}/cbn/boardfarm; \
-                                    /home/${USER_FOLDER_isolate}/cbn/boardfarm/bft -b mv1 -x ${testsuite_choose_isolate} -m ${FI_SH_NNEMN_P7_FILE_HTTP} -s ${FI_SH_NNEMN_P7_FILE} ${feature_isolate} -o ${result_isolate_folder})")
-                                    Run_Test_Status_isolate = "${Run_Test_Success}"
+                                    cd /home/${USER_FOLDER_daily}/cbn/boardfarm; \
+                                    /home/${USER_FOLDER_daily}/cbn/boardfarm/bft -b mv1 -x ${testsuite_choose_daily} -m ${FI_SH_NNEMN_P7_FILE_HTTP} -s ${FI_SH_NNEMN_P7_FILE} -o ${result_generic_folder})")
+                                    Run_Test_Status_daily = "${Run_Test_Success}"
                                 }catch (err){
                                     echo "Boardfarm Error"
-                                    Run_Test_Status_isolate = "${Run_Test_Fail}"
+                                    Run_Test_Status_daily = "${Run_Test_Fail}"
                                 }
                                 echo "===================Run CH7465CE Test FINISH==================="
                             }
@@ -215,7 +211,7 @@ stage('Daily Test - Generic') {
                                 echo "===================CH7465CE SUMMARY AND RESULT START==================="
                                 try{
                 					//Generate test summary and results to /tftpboot
-                                    sh("(export PATH=/home/${USER_FOLDER_isolate}/cbn/sign_image:${PATH}; Get_Result_Summary -m ch7465ce -p /home/${USER_FOLDER_isolate}/cbn/boardfarm/${result_isolate_folder}/results.html)")
+                                    sh("(export PATH=/home/${USER_FOLDER_daily}/cbn/sign_image:${PATH}; Get_Result_Summary -m ch7465ce -p /home/${USER_FOLDER_daily}/cbn/boardfarm/${result_generic_folder}/results.html)")
                                     //Set Test Summary
                                     env.TR_EXECUTED = sh(script:"cut -d: -f1 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
                                     env.TR_PASS     = sh(script:"cut -d: -f2 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
@@ -223,8 +219,8 @@ stage('Daily Test - Generic') {
                                     env.TR_SKIP     = sh(script:"cut -d: -f4 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
                                     env.TR_PASSRATE = sh(script:"cut -d: -f5 ${TR_ROOT_DIR}/${TR_SUMMARY_FILE}", returnStdout:true)
                                     //Copy Test report to Jenkins Server
-                                    TR_EMAIL_REPORT_FILE_isolate="${TR_EMAIL_REPORT_FILE_Default}${testsuite_choose_isolate}-${DATE_STRING}.html"
-                                    sh("scp ${TR_ROOT_DIR}/${TR_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_REPORT_FILE_isolate}")
+                                    TR_EMAIL_REPORT_FILE_daily="${TR_EMAIL_REPORT_FILE_Default}${testsuite_choose_daily}-${DATE_STRING}.html"
+                                    sh("scp ${TR_ROOT_DIR}/${TR_REPORT_FILE} ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_REPORT_FILE_daily}")
                                     echo 'Summary Result Success'
                                 } catch (err){
                                     echo 'Summary Result Fail'
@@ -233,64 +229,54 @@ stage('Daily Test - Generic') {
                             }
 
                 			stage('Starting Post-Run test actions'){
-                				echo "Run_Test_Status_isolate = ${Run_Test_Status_isolate}"
+                				echo "Run_Test_Status_daily = ${Run_Test_Status_daily}"
                 				stage('Parser test results for RootFSBootTest'){
                 					echo "===================Parser test results for RootFSBootTest START==================="
-                					dir("/home/${USER_FOLDER_isolate}/cbn/boardfarm/${result_isolate_folder}"){
+                					dir("/home/${USER_FOLDER_daily}/cbn/boardfarm/${result_generic_folder}"){
                 					//Get test result of RootFSBootTest from test_results.json
-                						Test_Result_Grade_isolate = sh(script:"re=`cat test_results.json | jq '.test_results[0].grade' | sed 's/\"//g'`; printf \$re", returnStdout:true)
-                						Test_Result_Name_isolate = sh(script:"re=`cat test_results.json | jq '.test_results[0].name' | sed 's/\"//g'`; printf \$re", returnStdout:true)
+                						Test_Result_Grade_daily = sh(script:"re=`cat test_results.json | jq '.test_results[0].grade' | sed 's/\"//g'`; printf \$re", returnStdout:true)
+                						Test_Result_Name_daily = sh(script:"re=`cat test_results.json | jq '.test_results[0].name' | sed 's/\"//g'`; printf \$re", returnStdout:true)
                 					}
                 					echo "===================Parser test results for RootFSBootTest FINISH==================="
                 				}
                 			}
                 			stage('Copy Console Log'){
                 				echo "===================Copy Console Log START==================="
-                				Wed_Path_Url_isolate 			= "http://${JENKINS_IP}:8080/job/${JOB_NAME}/lastBuild/consoleText"
-                				TR_EMAIL_CONSOLE_FILE_isolate	= "${TR_EMAIL_CONSOLE_FILE_Default}${testsuite_choose_isolate}-${DATE_STRING}.log"
+                				Wed_Path_Url_daily 			= "http://${JENKINS_IP}:8080/job/${JOB_NAME}/lastBuild/consoleText"
+                				TR_EMAIL_CONSOLE_FILE_daily	= "${TR_EMAIL_CONSOLE_FILE_Default}${testsuite_choose_daily}-${DATE_STRING}.log"
                 				withCredentials([usernamePassword(credentialsId: '59dbf979-31c9-4fbc-8870-7cc7e91fd58e', usernameVariable: 'JENKINSUSER', passwordVariable: 'JENKINSPWD')]) {
                 					sh("cd ~/cbn/sign_image; \
-                        			curl -u ${JENKINSUSER}:${JENKINSPWD} ${Wed_Path_Url_isolate} > console_output; \
-                        			scp ./console_output ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_CONSOLE_FILE_isolate}")
+                        			curl -u ${JENKINSUSER}:${JENKINSPWD} ${Wed_Path_Url_daily} > console_output; \
+                        			scp ./console_output ${JENKINS_LOGIN_USR}@${JENKINS_IP}:${JENKINS_PROJECT_HOME}/${DAILY_BUILD_FOLDER}/${MODEL}/${DATE_STRING}/${TR_EMAIL_CONSOLE_FILE_daily}")
                 				}
                 				echo "===================Copy Console Log FINISH==================="
                 			}
-                			stage('Port Disconnect'){
-				                echo '===================Port Disconnect Start==================='
-				                try {
-                                    sh(script:"re=`python /home/${USER_FOLDER_isolate}/cbn/port_disconnect.py -n ${DUT_isolate}` ;", returnStdout:true)
-                                    echo '===================Port Disconnect Pass==================='
-                                } catch(err){
-                                    echo '===================Port Disconnect Fail==================='
-            	                }
-            	                echo '===================Port Disconnect FINISH==================='
-				            }
                         }
                         node("result_integration"){
                             try{
-                				sh("cp /home/${USER_FOLDER_isolate}/cbn/boardfarm/${result_isolate_folder}/results.html /home/${USER_FOLDER_result}/${result_folder}/${result_name_isolate}")
-                				echo 'Copy 7465 daily test result pass'
-                			}catch(err){
-                				echo 'Copy ${result_name_isolate} to ${result_folder} fail'
-                			}
+                                sh("cp /home/${USER_FOLDER_daily}/cbn/boardfarm/${result_generic_folder}/results.html /home/result_integration/${result_folder}/${testsuite_choose}.html")
+                                echo 'Copy result.html to result_integration pass'
+                            }catch(err){
+                                echo 'Copy result.html to result_integration fail'
+                            }
                         }
                     }
                 }
-                if( "${Run_Test_Status_isolate}" == "Run Test Success" &&  "${Test_Result_Grade_isolate}" != "FAIL") break
+                if( "${Run_Test_Status_daily}" == "Run Test Success" &&  "${Test_Result_Grade_daily}" != "FAIL") break
                     echo "RUN Daily Test Not Success, Restart!!"
             }//END While
-            Isolate_result = "SUCCESS"
+            Daily_result = "SUCCESS"
             node("master"){
                 //send email
-                emailext attachmentsPattern: "**/${TR_EMAIL_REPORT_FILE_isolate}",
+                emailext attachmentsPattern: "**/${TR_EMAIL_REPORT_FILE_daily}",
                 body:'${JELLY_SCRIPT,template=\"templatereport_git2.jelly\"}',
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']],
                 replyTo: '$DEFAULT_REPLYTO',
-                subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_isolate} - (${Isolate_result}), ${FI_SH_PA_FILE}",
+                subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_daily} - (${Daily_result}),${FI_SH_PA_FILE}",
                 //to: '$DEFAULT_RECIPIENTS'
                 to: "${TEMP_RECIPIENT}"
                 echo 'Completed daily build and daily testing'
             }
-        },//END Isolate Task
+        },//END Generic Task
     )//end parallel
 }//end stage
