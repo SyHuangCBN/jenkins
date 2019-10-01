@@ -285,7 +285,7 @@ stage('Daily Test - Generic') {
                 body:'${JELLY_SCRIPT,template=\"templatereport_git2.jelly\"}',
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']],
                 replyTo: '$DEFAULT_REPLYTO',
-                subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_voice} - (${Voice_result}), ${FI_SH_PA_FILE}",
+                subject: "${JOB_NAME} - Build # ${BUILD_NUMBER} - ${testsuite_choose_voice} - (${Voice_result}), ${FI_SH_NNEMN_P7_FILE}",
                 //to: '$DEFAULT_RECIPIENTS'
                 to: "${TEMP_RECIPIENT}"
                 echo 'Completed daily build and daily testing'
